@@ -4,6 +4,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
+
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,7 +20,9 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private NavigationView navigationView;
-    private ViewPager viewPager;
+    private CustomViewPager viewPager;
+
+    private SourcecodeTab sourcecodeTabFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,6 +59,9 @@ public class MainActivity extends AppCompatActivity
         PagerAdapter pagerAdapter = new com.PyFlow.PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
+
+        // Disable swiping to switch tabs
+        viewPager.setPagingEnabled(false);
     }
 
     public void onBackPressed()

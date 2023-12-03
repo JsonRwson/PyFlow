@@ -2,16 +2,156 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sourcecode"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+    <ScrollView
+        android:id="@+id/source_code_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/lineNumbers"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/text_editor_bg"
+                android:gravity="top|end"
+                android:lineSpacingExtra="2dp"
+                android:paddingEnd="16dp"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#85837f" />
+
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.PyFlow.CustomEditText
+                    android:textCursorDrawable="@drawable/custom_cursor"
+                    android:id="@+id/sourceCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/text_editor_bg"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:lineSpacingExtra="2dp"
+                    android:minHeight="1920px"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:typeface="monospace" />
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/navigationButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/nav_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="left"
+            android:textColor="@color/black"
+            android:padding="0dp"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/nav_up"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="up"
+            android:textColor="@color/black"
+            android:padding="0dp"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/nav_down"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="down"
+            android:textColor="@color/black"
+            android:padding="0dp"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/nav_right"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="right"
+            android:padding="0dp"
+            android:textColor="@color/black"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="DEL"
+            android:padding="0dp"
+            android:textColor="@color/black"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/enter"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ENTER"
+            android:padding="0dp"
+            android:textColor="@color/black"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/keyboardButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="KEY"
+            android:padding="0dp"
+            android:textColor="@color/black"
+            android:background="@drawable/square_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,17 +4,22 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-public class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends FragmentPagerAdapter
+{
+    private SourcecodeTab sourcecodeTabFragment;
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
     @Override
-    public Fragment getItem(int position) {
-        switch (position) {
+    public Fragment getItem(int position)
+    {
+        switch(position)
+        {
             case 0:
-                return new SourcecodeTab();
+                sourcecodeTabFragment = new SourcecodeTab();
+                return sourcecodeTabFragment;
             case 1:
                 return new ExecuteCodeTab();
             default:
@@ -28,7 +33,8 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
+    public CharSequence getPageTitle(int position)
+    {
         // Set the title for each tab
         switch (position) {
             case 0:
