@@ -36,6 +36,8 @@
                 android:layout_height="match_parent"
                 android:background="#85837f" />
 
+
+
             <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -58,6 +60,130 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/keyboardPanel"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="#FFFFFF"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
+
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@color/cardview_dark_background">
+
+        <LinearLayout
+            android:id="@+id/keyboardPanelButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/key_import"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="import"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_var"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="var"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_func"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="func"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_loop"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="loop"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_selection"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="select"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_OOP"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OOP"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/key_except"
+                android:minWidth="20dp"
+                android:layout_weight="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="except"
+                android:textColor="@color/black"
+                android:padding="0dp"
+                android:background="@drawable/square_button"
+                app:backgroundTint="@null"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <com.PyFlow.KeyboardViewPager
+        android:id="@+id/keyboard_ViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
 
     <LinearLayout
         android:id="@+id/navigationButtons"

@@ -4,11 +4,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-public class PagerAdapter extends FragmentPagerAdapter
+public class PagerAdapterMain extends FragmentPagerAdapter
 {
     private SourcecodeTab sourcecodeTabFragment;
 
-    public PagerAdapter(FragmentManager fm) {
+    public PagerAdapterMain(FragmentManager fm) {
         super(fm);
     }
 
