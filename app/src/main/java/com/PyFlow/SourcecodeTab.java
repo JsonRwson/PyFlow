@@ -6,9 +6,11 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.os.Handler;
 import android.text.InputType;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -26,7 +28,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SourcecodeTab extends Fragment {
+public class SourcecodeTab extends Fragment
+{
+    private SharedViewModel sharedModel;
 
     private int mode = 0; // 0 for keyboard closed, 1 for keyboard open, 2 for keyboard closed
     private CustomEditText sourceCode;
@@ -39,6 +43,15 @@ public class SourcecodeTab extends Fragment {
 
     public SourcecodeTab() {}
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        sharedModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        CustomEditText sourceEditor = (CustomEditText) getView().findViewById(R.id.sourceCode);
+        sharedModel.select(sourceEditor);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -46,7 +59,7 @@ public class SourcecodeTab extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sourcecode_tab, container, false);
 
-        // Find the CustomEditText and TextView
+        // References to ui elements
         this.sourceCode = view.findViewById(R.id.sourceCode);
         this.lineNumbers = view.findViewById(R.id.lineNumbers);
         this.keyboardPanel = view.findViewById(R.id.keyboardPanel);
@@ -84,22 +97,24 @@ public class SourcecodeTab extends Fragment {
         sourceCode.setFocusable(false);
         sourceCode.setFocusableInTouchMode(false);
 
+        // Test program to paste into editor
+/*
+import random
 
-        // Test program inserted into editor
-        String pythonCode = "import random\n\n" +
-                "def guess_the_number():\n" +
-                "    number_to_guess = random.randint(1, 100)\n" +
-                "    guess = None\n" +
-                "    while guess != number_to_guess:\n" +
-                "        guess = int(input(\"Guess a number between 1 and 100: \"))\n" +
-                "        if guess < number_to_guess:\n" +
-                "            print(\"Too low!\")\n" +
-                "        elif guess > number_to_guess:\n" +
-                "            print(\"Too high!\")\n" +
-                "    print(\"Congratulations! You guessed the number.\")\n\n" +
-                "guess_the_number()";
-        sourceCode.setText(pythonCode);
-        sourceCode.updateLineNumbers();
+def guess_the_number():
+    number_to_guess = random.randint(1, 100)
+    guess = None
+    while guess != number_to_guess:
+        guess = int(input("Guess a number between 1 and 100: "))
+        if guess < number_to_guess:
+            print("Too low!")
+        elif guess > number_to_guess:
+            print("Too high!")
+    print("Congratulations! You guessed the number.")
+
+guess_the_number()
+*/
+
 
         // Find the keyboardButton
         Button keyboardButton = view.findViewById(R.id.keyboardButton);
@@ -146,7 +161,7 @@ public class SourcecodeTab extends Fragment {
         Button delete = view.findViewById(R.id.delete);
         Button enter = view.findViewById(R.id.enter);
 
-        // Navigation and Enter + Del + Keyboard toggle buttons onClicks ======
+        // Navigation and Enter + Del + Keyboard toggle buttons onClicks =====================================
         navLeft.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -209,6 +224,7 @@ public class SourcecodeTab extends Fragment {
             }
         });
 
+        // Single tap delete
         delete.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -221,6 +237,57 @@ public class SourcecodeTab extends Fragment {
             }
         });
 
+        // Press and hold delete
+        delete.setOnTouchListener(new View.OnTouchListener()
+        {
+            final Handler handler = new Handler();
+            long startTime;
+            int delay = 200;
+            private Runnable runnable;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event)
+            {
+                if(event.getAction() == MotionEvent.ACTION_DOWN)
+                {
+                    startTime = System.currentTimeMillis();
+
+                    if(runnable != null)
+                    {
+                        handler.removeCallbacks(runnable);
+                    }
+
+                    runnable = new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            int start = sourceCode.getSelectionStart();
+                            if (start > 0)
+                            {
+                                sourceCode.getText().delete(start - 1, start);
+                            }
+
+                            long duration = System.currentTimeMillis() - startTime;
+                            delay = Math.max(50, (int)(200 - duration / 10));
+
+                            handler.postDelayed(this, delay);
+                        }
+                    };
+
+                    handler.postDelayed(runnable, delay);
+                }
+                else if (event.getAction() == MotionEvent.ACTION_UP)
+                {
+                    if(runnable != null)
+                    {
+                        handler.removeCallbacks(runnable);
+                    }
+                }
+                return false;
+            }
+        });
+
         enter.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -230,7 +297,7 @@ public class SourcecodeTab extends Fragment {
             }
         });
 
-        // Keyboard Page navigation buttons onClicks
+        // Keyboard Page navigation buttons onClicks =================================================
         Button importPageButton = view.findViewById(R.id.key_import);
         Button variablesPageButton = view.findViewById(R.id.key_var);
         Button functionsPageButton = view.findViewById(R.id.key_func);
@@ -274,6 +341,53 @@ public class SourcecodeTab extends Fragment {
                 LayoutInflater inflater = LayoutInflater.from(container.getContext());
                 View page = inflater.inflate(pages.get(position), container, false);
                 container.addView(page);
+
+                // Keyboard Page specific buttons onClicks =================================================
+                if(position == 1)
+                {
+                    // Variables =================================================
+                    Button newVariableButton = page.findViewById(R.id.new_var);
+                    Button updateVariableButton = page.findViewById(R.id.update_var);
+
+                    newVariableButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            int start = sourceCode.getSelectionStart();
+                            sourceCode.getText().insert(start, "x = 10");
+                        }
+                    });
+                }
+
+                if(position == 2)
+                {
+                    // Functions =================================================
+                    Button newFunctionButton = page.findViewById(R.id.new_func);
+                    Button callFunctionButton = page.findViewById(R.id.call_func);
+
+                    newFunctionButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            int start = sourceCode.getSelectionStart();
+                            sourceCode.getText().insert(start, "def newFunction():\n\tprint(\"hello world\")");
+                        }
+                    });
+
+                    callFunctionButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            int start = sourceCode.getSelectionStart();
+                            sourceCode.getText().insert(start, "newFunction()");
+                        }
+                    });
+                }
+
+
 
                 return page;
             }

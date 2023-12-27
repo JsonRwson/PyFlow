@@ -23,6 +23,9 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         // Add a TextWatcher to update the line numbers
         addTextChangedListener(new TextWatcher()
         {
+            int cursorPosition;
+            int previousLength = 0;
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after)
             {}
@@ -38,6 +41,12 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
             }
         });
     }
+
+//    @Override
+//    public boolean onCheckIsTextEditor()
+//    {
+//        return false;
+//    }
 
     public void setLineNumberView(TextView lineNumberView)
     {

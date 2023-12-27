@@ -27,29 +27,32 @@
                 android:background="@color/text_editor_bg"
                 android:gravity="top|end"
                 android:lineSpacingExtra="2dp"
-                android:paddingEnd="16dp"
+                android:paddingEnd="10dp"
+                android:paddingStart="10dp"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="#85837f" />
-
-
+                android:background="#85837f"/>
 
             <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minWidth="100dp"
+                android:fillViewport="true">
 
                 <com.PyFlow.CustomEditText
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:id="@+id/sourceCode"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/text_editor_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@color/text_editor_bg_alt"
                     android:gravity="top"
-                    android:inputType="textMultiLine"
+                    android:paddingStart="5dp"
+                    android:inputType="textMultiLine|textNoSuggestions|textVisiblePassword"
                     android:lineSpacingExtra="2dp"
                     android:minHeight="1920px"
                     android:textColor="#FFFFFF"
