@@ -1,48 +1,397 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <ScrollView
+        android:background="@color/page_bg"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/new_var"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/keyboard_button"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="New Var"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+                <Button
+                    android:id="@+id/var_goto"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/keyboard_button"
+                    android:paddingStart="5dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="Goto"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+                <Button
+                    android:id="@+id/var_paste"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/keyboard_button"
+                    android:paddingStart="5dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="Paste"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+                <Button
+                    android:id="@+id/var_assign"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/keyboard_button"
+                    android:paddingStart="5dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="Assign"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_gravity="center_horizontal">
+                    android:layout_marginStart="10dp"
+                    android:text="Definitions"
+                    android:textSize="18dp" />
 
-                    <Button
-                        android:id="@+id/new_var"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                <Button
+                    android:id="@+id/var_def_refresh"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/refresh_icon"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+                <Button
+                    android:id="@+id/var_def_collapse"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/down_chevron_icon"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:id="@+id/var_def_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:showDividers="middle"
+                android:stretchColumns="*">
+
+            </TableLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Keys"
+                    android:textSize="18dp" />
+
+                <Button
+                    android:id="@+id/var_keys_collapse"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/down_chevron_icon"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:id="@+id/var_keys_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:showDividers="middle"
+                android:stretchColumns="*"
+                >
+
+                <TableRow>
+                    <Button android:text="global"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
                         android:layout_weight="1"
-                        android:layout_margin="5dp"
-                        android:text="New Variable"
-                        android:singleLine="true"/>
-
-                    <Button
-                        android:id="@+id/update_var"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="nonlocal"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
                         android:layout_weight="1"
-                        android:layout_margin="5dp"
-                        android:text="Update Variable"
-                        android:singleLine="true"/>
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="None"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="True"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="False"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
 
-                </LinearLayout>
+                <TableRow>
+                    <Button android:text="self"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="+"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="-"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="["
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="]"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="!"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="="
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="&quot;"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="{"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="}"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="_"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=","
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="\\"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="("
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=")"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="'"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=":"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="/"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="."
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="*"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+            </TableLayout>
 
         </LinearLayout>
 
     </ScrollView>
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

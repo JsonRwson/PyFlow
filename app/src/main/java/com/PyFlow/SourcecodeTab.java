@@ -1,54 +1,52 @@
 package com.PyFlow;
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import com.PyFlow.keyboard_pages.*;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-
 import android.os.Handler;
 import android.text.InputType;
 import android.text.Layout;
+
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager.widget.PagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SourcecodeTab extends Fragment
 {
-    private SharedViewModel sharedModel;
-
     private int mode = 0; // 0 for keyboard closed, 1 for keyboard open, 2 for keyboard closed
     private CustomEditText sourceCode;
-    private TextView lineNumbers;
     private LinearLayout keyboardPanel;
-
-    private Button buttonImport;
-    private Button buttonVar;
-    private Button buttonFunc;
+    private Button[] pageNavButtons;
 
     public SourcecodeTab() {}
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
-        sharedModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        CustomEditText sourceEditor = (CustomEditText) getView().findViewById(R.id.sourceCode);
+        super.onViewCreated(view, savedInstanceState);
+        SharedViewModel sharedModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        CustomEditText sourceEditor = getView().findViewById(R.id.sourceCode);
         sharedModel.select(sourceEditor);
     }
 
@@ -60,33 +58,29 @@ public class SourcecodeTab extends Fragment
         View view = inflater.inflate(R.layout.fragment_sourcecode_tab, container, false);
 
         // References to ui elements
+        TextView lineNumbers = view.findViewById(R.id.lineNumbers);
+        LinearLayout keyboardNavLayout = view.findViewById(R.id.keyboardPanelButtons);
         this.sourceCode = view.findViewById(R.id.sourceCode);
-        this.lineNumbers = view.findViewById(R.id.lineNumbers);
         this.keyboardPanel = view.findViewById(R.id.keyboardPanel);
 
-        // Resize page buttons on keyboard
-        LinearLayout keyboardPanelButtons = view.findViewById(R.id.keyboardPanelButtons);
-        int keyboardButtonWidth = 150;
 
-        for (int i = 0; i < keyboardPanelButtons.getChildCount(); i++)
+        // Fetch keyboard page buttons, resize them and add then to an array
+        int keyboardButtonWidth = 150;
+        pageNavButtons = new Button[keyboardNavLayout.getChildCount()];
+
+        for (int i = 0; i < keyboardNavLayout.getChildCount(); i++)
         {
-            View child = keyboardPanelButtons.getChildAt(i);
+            View child = keyboardNavLayout.getChildAt(i);
             if (child instanceof Button)
             {
+                pageNavButtons[i] = (Button) child;
                 child.getLayoutParams().width = keyboardButtonWidth;
                 child.requestLayout();
             }
         }
 
-        // Stop the editor recieving touch inputs when the empty keyboard space is pressed
-        keyboardPanel.setOnTouchListener(new View.OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                return true;
-            }
-        });
+        // Stop the editor receiving touch inputs when the empty keyboard space is pressed
+        keyboardPanel.setOnTouchListener((v, event) -> true);
 
         // Set the line number view
         sourceCode.setLineNumberView(lineNumbers);
@@ -94,62 +88,39 @@ public class SourcecodeTab extends Fragment
         // Disable the default keyboard from popping up
         sourceCode.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         sourceCode.setImeOptions(EditorInfo.IME_ACTION_NONE);
-        sourceCode.setFocusable(false);
-        sourceCode.setFocusableInTouchMode(false);
-
-        // Test program to paste into editor
-/*
-import random
-
-def guess_the_number():
-    number_to_guess = random.randint(1, 100)
-    guess = None
-    while guess != number_to_guess:
-        guess = int(input("Guess a number between 1 and 100: "))
-        if guess < number_to_guess:
-            print("Too low!")
-        elif guess > number_to_guess:
-            print("Too high!")
-    print("Congratulations! You guessed the number.")
-
-guess_the_number()
-*/
-
+        sourceCode.allowSoftInput(false);
 
         // Find the keyboardButton
         Button keyboardButton = view.findViewById(R.id.keyboardButton);
-        keyboardButton.setOnClickListener(new View.OnClickListener()
+        keyboardButton.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (mode == 0) // Show custom keyboard panel
             {
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (mode == 0)
-                {
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    keyboardPanel.setVisibility(View.VISIBLE);
-                    sourceCode.setFocusableInTouchMode(true);
-                    sourceCode.requestFocus();
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                keyboardPanel.setVisibility(View.VISIBLE);
+                sourceCode.requestFocus();
+                sourceCode.allowSoftInput(false);
 
-                    mode = 1;
-                }
-                else if (mode == 1)
-                {
-                    keyboardPanel.setVisibility(View.GONE);
-                    sourceCode.setFocusableInTouchMode(true);
-                    sourceCode.requestFocus();
-                    imm.showSoftInput(sourceCode, InputMethodManager.SHOW_IMPLICIT);
-                    mode = 2;
-                }
-                else
-                {
-                    keyboardPanel.setVisibility(View.GONE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    sourceCode.clearFocus();
-                    sourceCode.setFocusable(false);
-                    sourceCode.setFocusableInTouchMode(false);
-                    mode = 0;
-                }
+                mode = 1;
+            }
+            else if (mode == 1) // Show built in keyboard
+            {
+                keyboardPanel.setVisibility(View.GONE);
+                sourceCode.requestFocus();
+                imm.showSoftInput(sourceCode, InputMethodManager.SHOW_IMPLICIT);
+                sourceCode.allowSoftInput(true);
+
+                mode = 2;
+            }
+            else // Close both
+            {
+                keyboardPanel.setVisibility(View.GONE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                sourceCode.clearFocus();
+                sourceCode.allowSoftInput(false);
+
+                mode = 0;
             }
         });
 
@@ -161,79 +132,68 @@ guess_the_number()
         Button delete = view.findViewById(R.id.delete);
         Button enter = view.findViewById(R.id.enter);
 
-        // Navigation and Enter + Del + Keyboard toggle buttons onClicks =====================================
-        navLeft.setOnClickListener(new View.OnClickListener()
+        // Navigation and Enter + Del + Keyboard toggle buttons onClicks ===========================================
+        navLeft.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                int start = Math.max(sourceCode.getSelectionStart() - 1, 0);
-                sourceCode.setSelection(start);
-            }
+            int start = Math.max(sourceCode.getSelectionStart() - 1, 0);
+            sourceCode.setSelection(start);
         });
 
-        navRight.setOnClickListener(new View.OnClickListener()
+        navRight.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                int end = Math.min(sourceCode.getSelectionStart() + 1, sourceCode.getText().length());
-                sourceCode.setSelection(end);
-            }
+            int end = Math.min(sourceCode.getSelectionStart() + 1, sourceCode.getText().length());
+            sourceCode.setSelection(end);
         });
 
-        navUp.setOnClickListener(new View.OnClickListener()
+        navUp.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                int pos = sourceCode.getSelectionStart();
-                Layout layout = sourceCode.getLayout();
+            int pos = sourceCode.getSelectionStart();
+            Layout layout = sourceCode.getLayout();
 
-                if (layout != null)
+            if (layout != null)
+            {
+                int line = layout.getLineForOffset(pos);
+                int offset = pos - layout.getLineStart(line);
+                if (line > 0)
                 {
-                    int line = layout.getLineForOffset(pos);
-                    int offset = pos - layout.getLineStart(line);
-                    if (line > 0)
-                    {
-                        int move = Math.min(layout.getLineStart(line - 1) + offset, layout.getLineEnd(line - 1));
-                        sourceCode.setSelection(move);
-                    }
+                    int move = Math.min(layout.getLineStart(line - 1) + offset, layout.getLineEnd(line - 1));
+                    sourceCode.setSelection(move);
                 }
             }
         });
 
-        navDown.setOnClickListener(new View.OnClickListener()
+        navDown.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                int pos = sourceCode.getSelectionStart();
-                Layout layout = sourceCode.getLayout();
+            int pos = sourceCode.getSelectionStart();
+            Layout layout = sourceCode.getLayout();
 
-                if (layout != null)
+            if (layout != null)
+            {
+                int line = layout.getLineForOffset(pos);
+                int offset = pos - layout.getLineStart(line);
+                if (line < layout.getLineCount() - 1)
                 {
-                    int line = layout.getLineForOffset(pos);
-                    int offset = pos - layout.getLineStart(line);
-                    if (line < layout.getLineCount() - 1)
-                    {
-                        int move = Math.min(layout.getLineStart(line + 1) + offset, layout.getLineEnd(line + 1));
-                        sourceCode.setSelection(move);
-                    }
+                    int move = Math.min(layout.getLineStart(line + 1) + offset, layout.getLineEnd(line + 1));
+                    sourceCode.setSelection(move);
                 }
             }
         });
 
         // Single tap delete
-        delete.setOnClickListener(new View.OnClickListener()
+        delete.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            int start = sourceCode.getSelectionStart();
+            int end = sourceCode.getSelectionEnd();
+
+            if (start != end)
             {
-                int start = sourceCode.getSelectionStart();
-                if (start > 0) {
-                    sourceCode.getText().delete(start - 1, start);
-                }
+                // Some text is selected. Delete it.
+                sourceCode.getText().delete(start, end);
+            }
+            else if (start > 0)
+            {
+                // No text is selected. Delete character before cursor.
+                sourceCode.getText().delete(start - 1, start);
             }
         });
 
@@ -288,13 +248,97 @@ guess_the_number()
             }
         });
 
-        enter.setOnClickListener(new View.OnClickListener()
+        enter.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v) {
-                int start = sourceCode.getSelectionStart();
+            int start = sourceCode.getSelectionStart();
+            int end = sourceCode.getSelectionEnd();
+
+            if (start != end)
+            {
+                // Some text is selected replace it with a newline.
+                sourceCode.getText().replace(start, end, "\n");
+            }
+            else
+            {
+                // No text is selected insert a newline at the cursor position.
                 sourceCode.getText().insert(start, "\n");
             }
+        });
+
+        // Utility buttons, tab, space, copy, paste, comment
+        Button utilTab = view.findViewById(R.id.util_tab);
+        Button utilSpace = view.findViewById(R.id.util_space);
+        Button utilCopy = view.findViewById(R.id.util_copy);
+        Button utilPaste = view.findViewById(R.id.util_paste);
+        Button utilComment = view.findViewById(R.id.util_comment);
+
+        utilTab.setOnClickListener(v ->
+        {
+            int startSelection = sourceCode.getSelectionStart();
+            int endSelection = sourceCode.getSelectionEnd();
+
+            String selectedText = sourceCode.getText().toString().substring(startSelection, endSelection);
+            if (selectedText.contains("\n"))
+            {
+                selectedText = selectedText.replaceAll("\n", "\n\t");
+                sourceCode.getText().replace(startSelection, endSelection, "\t" + selectedText);
+            }
+            else
+            {
+                sourceCode.getText().insert(startSelection, "\t");
+            }
+        });
+
+        utilSpace.setOnClickListener(v ->
+        {
+            int startSelection = sourceCode.getSelectionStart();
+            int endSelection = sourceCode.getSelectionEnd();
+            if (startSelection != endSelection)
+            {
+                sourceCode.getText().replace(startSelection, endSelection, " ");
+            }
+            else
+            {
+                sourceCode.getText().insert(startSelection, " ");
+            }
+        });
+
+        utilCopy.setOnClickListener(v ->
+        {
+            int startSelection = sourceCode.getSelectionStart();
+            int endSelection = sourceCode.getSelectionEnd();
+
+            String selectedText = sourceCode.getText().toString().substring(startSelection, endSelection);
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("label", selectedText);
+            clipboard.setPrimaryClip(clip);
+        });
+
+        utilPaste.setOnClickListener(v ->
+        {
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = clipboard.getPrimaryClip();
+
+            if (clip != null)
+            {
+                String pasteData = clip.getItemAt(0).getText().toString();
+                int startSelection = sourceCode.getSelectionStart();
+                int endSelection = sourceCode.getSelectionEnd();
+
+                if (startSelection != endSelection)
+                {
+                    sourceCode.getText().replace(startSelection, endSelection, pasteData);
+                }
+                else
+                {
+                    sourceCode.getText().insert(startSelection, pasteData);
+                }
+            }
+        });
+
+        utilComment.setOnClickListener(v ->
+        {
+
         });
 
         // Keyboard Page navigation buttons onClicks =================================================
@@ -305,6 +349,7 @@ guess_the_number()
         Button selectionPageButton = view.findViewById(R.id.key_selection);
         Button OOPPageButton = view.findViewById(R.id.key_OOP);
         Button exceptionsPageButton = view.findViewById(R.id.key_except);
+        Button snippetsPageButton = view.findViewById(R.id.key_snip);
 
         // Find the ViewPager
         KeyboardViewPager viewPager = view.findViewById(R.id.keyboard_ViewPager);
@@ -318,6 +363,7 @@ guess_the_number()
         pages.add(R.layout.page_selection);
         pages.add(R.layout.page_oop);
         pages.add(R.layout.page_except);
+        pages.add(R.layout.page_snippets);
 
         // Create a PagerAdapter
         PagerAdapter keyboardPagerAdapter = new PagerAdapter()
@@ -342,53 +388,34 @@ guess_the_number()
                 View page = inflater.inflate(pages.get(position), container, false);
                 container.addView(page);
 
-                // Keyboard Page specific buttons onClicks =================================================
-                if(position == 1)
+                // Initialise classes that manage the code for each page, pass them required data
+                switch (position)
                 {
-                    // Variables =================================================
-                    Button newVariableButton = page.findViewById(R.id.new_var);
-                    Button updateVariableButton = page.findViewById(R.id.update_var);
-
-                    newVariableButton.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, "x = 10");
-                        }
-                    });
+                    case 0:
+                        imports_page page_import = new imports_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 1:
+                        variables_page page_variables = new variables_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 2:
+                        functions_page page_functions = new functions_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 3:
+                        loops_page page_loops = new loops_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 4:
+                        selection_page page_selection = new selection_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 5:
+                        OOP_page page_OOP = new OOP_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 6:
+                        exceptions_page page_exceptions = new exceptions_page(page, SourcecodeTab.this, sourceCode);
+                        break;
+                    case 7:
+                        snippets_page page_snippets = new snippets_page(page, SourcecodeTab.this, sourceCode);
+                        break;
                 }
-
-                if(position == 2)
-                {
-                    // Functions =================================================
-                    Button newFunctionButton = page.findViewById(R.id.new_func);
-                    Button callFunctionButton = page.findViewById(R.id.call_func);
-
-                    newFunctionButton.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, "def newFunction():\n\tprint(\"hello world\")");
-                        }
-                    });
-
-                    callFunctionButton.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, "newFunction()");
-                        }
-                    });
-                }
-
-
-
                 return page;
             }
 
@@ -401,70 +428,81 @@ guess_the_number()
 
         // Set the PagerAdapter to the ViewPager
         viewPager.setAdapter(keyboardPagerAdapter);
+        highlightButton(importPageButton);
 
-        importPageButton.setOnClickListener(new View.OnClickListener()
+        // Keyboard panel navigation onclick ==========================================================================
+        importPageButton.setOnClickListener(view18 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(0);
-            }
+            viewPager.setCurrentItem(0);
+            resetButtonBackgrounds();
+            highlightButton(importPageButton);
+
         });
 
-        variablesPageButton.setOnClickListener(new View.OnClickListener()
+        variablesPageButton.setOnClickListener(view17 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(1);
-            }
+            viewPager.setCurrentItem(1);
+            resetButtonBackgrounds();
+            highlightButton(variablesPageButton);
         });
 
-        functionsPageButton.setOnClickListener(new View.OnClickListener()
+        functionsPageButton.setOnClickListener(view16 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(2);
-            }
+            viewPager.setCurrentItem(2);
+            resetButtonBackgrounds();
+            highlightButton(functionsPageButton);
         });
 
-        loopPageButton.setOnClickListener(new View.OnClickListener()
+        loopPageButton.setOnClickListener(view15 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(3);
-            }
+            viewPager.setCurrentItem(3);
+            resetButtonBackgrounds();
+            highlightButton(loopPageButton);
         });
 
-        selectionPageButton.setOnClickListener(new View.OnClickListener()
+        selectionPageButton.setOnClickListener(view14 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(4);
-            }
+            viewPager.setCurrentItem(4);
+            resetButtonBackgrounds();
+            highlightButton(selectionPageButton);
         });
 
-        OOPPageButton.setOnClickListener(new View.OnClickListener()
+        OOPPageButton.setOnClickListener(view13 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(5);
-            }
+            viewPager.setCurrentItem(5);
+            resetButtonBackgrounds();
+            highlightButton(OOPPageButton);
         });
 
-        exceptionsPageButton.setOnClickListener(new View.OnClickListener()
+        exceptionsPageButton.setOnClickListener(view12 ->
         {
-            @Override
-            public void onClick(View view)
-            {
-                viewPager.setCurrentItem(6);
-            }
+            viewPager.setCurrentItem(6);
+            resetButtonBackgrounds();
+            highlightButton(exceptionsPageButton);
+        });
+
+        snippetsPageButton.setOnClickListener(view1 ->
+        {
+            viewPager.setCurrentItem(7);
+            resetButtonBackgrounds();
+            highlightButton(snippetsPageButton);
         });
 
         return view;
+    }
+
+    // Button styling methods =============================================================================================
+    private void resetButtonBackgrounds()
+    {
+        for (Button button : pageNavButtons)
+        {
+            button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.keyboard_page_buttons, null));
+        }
+    }
+
+    // Method to highlight a button
+    private void highlightButton(Button button)
+    {
+        button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.keyboard_page_button_highlighted, null));
     }
 }

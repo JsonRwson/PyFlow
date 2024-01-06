@@ -10,7 +10,8 @@
         android:id="@+id/source_code_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
+        android:overScrollMode="never"
+        app:layout_constraintBottom_toTopOf="@+id/utilityButtons"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -30,7 +31,7 @@
                 android:paddingEnd="10dp"
                 android:paddingStart="10dp"
                 android:textColor="#FFFFFF"
-                android:textSize="14sp" />
+                android:textSize="17sp" />
 
             <View
                 android:layout_width="1dp"
@@ -56,8 +57,8 @@
                     android:lineSpacingExtra="2dp"
                     android:minHeight="1920px"
                     android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:typeface="monospace" />
+                    android:textSize="17sp"
+                    android:typeface="monospace"/>
 
             </HorizontalScrollView>
 
@@ -67,7 +68,7 @@
     <LinearLayout
         android:id="@+id/keyboardPanel"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="280dp"
         android:background="#FFFFFF"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
@@ -75,118 +76,201 @@
         app:layout_constraintStart_toStartOf="parent"
         android:orientation="horizontal">
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:background="@color/cardview_dark_background">
-
-        <LinearLayout
-            android:id="@+id/keyboardPanelButtons"
+        <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background">
 
-            <Button
-                android:id="@+id/key_import"
-                android:minWidth="20dp"
-                android:layout_weight="1"
+            <LinearLayout
+                android:id="@+id/keyboardPanelButtons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="import"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/key_var"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="var"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_import"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="import"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-            <Button
-                android:id="@+id/key_func"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="func"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_var"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="var"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-            <Button
-                android:id="@+id/key_loop"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="loop"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_func"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="func"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-            <Button
-                android:id="@+id/key_selection"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="select"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_loop"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="loop"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-            <Button
-                android:id="@+id/key_OOP"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OOP"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_selection"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="select"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-            <Button
-                android:id="@+id/key_except"
-                android:minWidth="20dp"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="except"
-                android:textColor="@color/black"
-                android:padding="0dp"
-                android:background="@drawable/square_button"
-                app:backgroundTint="@null"
-                android:singleLine="true" />
+                <Button
+                    android:id="@+id/key_OOP"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OOP"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-        </LinearLayout>
+                <Button
+                    android:id="@+id/key_except"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="except"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-    </ScrollView>
+                <Button
+                    android:id="@+id/key_snip"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="snip"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
 
-    <com.PyFlow.KeyboardViewPager
-        android:id="@+id/keyboard_ViewPager"
+            </LinearLayout>
+        </ScrollView>
+
+        <com.PyFlow.KeyboardViewPager
+            android:id="@+id/keyboard_ViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/utilityButtons"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/keyboardPanel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
-</LinearLayout>
+        <Button
+            android:id="@+id/util_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Indent"
+            android:textColor="@color/white"
+            android:padding="0dp"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_space"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Space"
+            android:textColor="@color/white"
+            android:padding="0dp"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_copy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Copy"
+            android:textColor="@color/white"
+            android:padding="0dp"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_paste"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Paste"
+            android:padding="0dp"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_comment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Comment"
+            android:padding="0dp"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/navigationButtons"
@@ -203,9 +287,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="left"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/square_button"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -215,9 +299,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="up"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/square_button"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -227,9 +311,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="down"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/square_button"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -240,8 +324,8 @@
             android:layout_weight="1"
             android:text="right"
             android:padding="0dp"
-            android:textColor="@color/black"
-            android:background="@drawable/square_button"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -252,8 +336,8 @@
             android:layout_weight="1"
             android:text="DEL"
             android:padding="0dp"
-            android:textColor="@color/black"
-            android:background="@drawable/square_button"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -264,8 +348,8 @@
             android:layout_weight="1"
             android:text="ENTER"
             android:padding="0dp"
-            android:textColor="@color/black"
-            android:background="@drawable/square_button"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -276,8 +360,8 @@
             android:layout_weight="1"
             android:text="KEY"
             android:padding="0dp"
-            android:textColor="@color/black"
-            android:background="@drawable/square_button"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 

@@ -27,7 +27,8 @@ def main(CodeInputData, inputLines):
             nonlocal input_index
 
             # Write the prompt to stdout
-            sys.stdout.write(prompt+"\n")
+            if prompt != "":
+                sys.stdout.write(prompt+"\n")
 
             # Get the input data from the provided list of input lines
             if input_index < len(inputLines):
