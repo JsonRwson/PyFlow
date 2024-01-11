@@ -1,46 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ScrollView
         android:id="@+id/source_code_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@+id/utilityButtons"
+        android:scrollbarSize="10dp"
+        android:scrollbarThumbVertical="@drawable/custom_scroller"
+        app:layout_constraintBottom_toTopOf="@+id/symbolButtonsScroll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:verticalScrollbarPosition="left">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/lineNumbers"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@color/text_editor_bg"
+                android:background="@drawable/line_numbers_bg"
                 android:gravity="top|end"
                 android:lineSpacingExtra="2dp"
-                android:paddingEnd="10dp"
-                android:paddingStart="10dp"
+                android:paddingEnd="5dp"
+                android:paddingStart="4dp"
+                android:layout_marginEnd="1dp"
                 android:textColor="#FFFFFF"
                 android:textSize="17sp" />
 
-            <View
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="#85837f"/>
-
             <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:minWidth="100dp"
                 android:fillViewport="true">
@@ -48,7 +49,7 @@
                 <com.PyFlow.CustomEditText
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:id="@+id/sourceCode"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@color/text_editor_bg_alt"
                     android:gravity="top"
@@ -58,148 +59,278 @@
                     android:minHeight="1920px"
                     android:textColor="#FFFFFF"
                     android:textSize="17sp"
-                    android:typeface="monospace"/>
+                    android:typeface="monospace" />
 
             </HorizontalScrollView>
 
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/keyboardPanel"
+    <HorizontalScrollView
+        android:id="@+id/symbolButtonsScroll"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
-        android:background="#FFFFFF"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/utilityButtons"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:orientation="horizontal">
+        app:layout_constraintStart_toStartOf="parent">
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:background="@color/cardview_dark_background">
-
-            <LinearLayout
-                android:id="@+id/keyboardPanelButtons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/key_import"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="import"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_var"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="var"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_func"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="func"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_loop"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="loop"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_selection"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="select"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_OOP"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="OOP"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_except"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="except"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-                <Button
-                    android:id="@+id/key_snip"
-                    android:minWidth="20dp"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="snip"
-                    android:textColor="@color/black"
-                    android:padding="0dp"
-                    android:background="@drawable/keyboard_page_buttons"
-                    app:backgroundTint="@null"
-                    android:singleLine="true" />
-
-            </LinearLayout>
-        </ScrollView>
-
-        <com.PyFlow.KeyboardViewPager
-            android:id="@+id/keyboard_ViewPager"
+        <LinearLayout
+            android:id="@+id/symbolButtons"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="30dp"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:text="&quot;"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="'"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text=":"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="="
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="_"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.4"
+                android:text="[]"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.4"
+                android:text="()"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="/"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="*"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="%"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="^"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text=">"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="&lt;"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.4"
+                android:text="{}"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="!"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="\?"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text="$"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:text=";"
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/utilityButtons"
@@ -216,18 +347,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Indent"
-            android:textColor="@color/white"
-            android:padding="0dp"
-            android:background="@drawable/utility_button_bg"
-            app:backgroundTint="@null"
-            android:singleLine="true"/>
-
-        <Button
-            android:id="@+id/util_space"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Space"
             android:textColor="@color/white"
             android:padding="0dp"
             android:background="@drawable/utility_button_bg"
@@ -270,12 +389,160 @@
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
+        <Button
+            android:id="@+id/util_string"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="String"
+            android:padding="0dp"
+            android:textColor="@color/white"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/keyboardPanel"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:background="#FFFFFF"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/navigationButtons"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal">
+
+        <ScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/cardview_dark_background">
+
+            <LinearLayout
+                android:id="@+id/keyboardPanelButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/key_import"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Import"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_var"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Var"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_func"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Func"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_loop"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Loop"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_selection"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="if/else"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_oper"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+=/1"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_OOP"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Class"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+                <Button
+                    android:id="@+id/key_except"
+                    android:minWidth="20dp"
+                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Except"
+                    android:textColor="@color/black"
+                    android:padding="0dp"
+                    android:background="@drawable/keyboard_page_buttons"
+                    app:backgroundTint="@null"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <com.PyFlow.KeyboardViewPager
+            android:id="@+id/keyboard_ViewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/navigationButtons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -286,10 +553,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="left"
             android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/left_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -298,10 +564,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="up"
             android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/up_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -310,10 +575,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="down"
             android:textColor="@color/white"
             android:padding="0dp"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/down_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -322,9 +586,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="right"
             android:padding="0dp"
             android:textColor="@color/white"
+            android:background="@drawable/right_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_space"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Space"
+            android:textColor="@color/white"
+            android:padding="0dp"
             android:background="@drawable/utility_button_bg"
             app:backgroundTint="@null"
             android:singleLine="true"/>
@@ -334,10 +609,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="DEL"
             android:padding="0dp"
             android:textColor="@color/white"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/backspace_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -346,10 +620,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="ENTER"
             android:padding="0dp"
             android:textColor="@color/white"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/enter_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
@@ -358,13 +631,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="KEY"
             android:padding="0dp"
             android:textColor="@color/white"
-            android:background="@drawable/utility_button_bg"
+            android:background="@drawable/keyboard_swap_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

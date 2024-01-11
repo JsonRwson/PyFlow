@@ -2,6 +2,9 @@ package com.PyFlow;
 
 import static android.app.Activity.RESULT_OK;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -48,14 +51,7 @@ public class ExecuteCodeTab extends Fragment
         super.onActivityCreated(savedInstanceState);
 
         sharedModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        sharedModel.getSelected().observe(getViewLifecycleOwner(), new Observer<CustomEditText>()
-        {
-            @Override
-            public void onChanged(@Nullable CustomEditText customEditText)
-            {
-                codeInputText = customEditText;
-            }
-        });
+        sharedModel.getSelected().observe(getViewLifecycleOwner(), customEditText -> codeInputText = customEditText);
     }
 
     @Override
@@ -74,6 +70,7 @@ public class ExecuteCodeTab extends Fragment
         codeOutputText = (TextView) view.findViewById(R.id.code_output);
         Button addInputButton = view.findViewById(R.id.add_input);
         Button removeInputButton = view.findViewById(R.id.remove_input);
+        Button copyOutputButton = view.findViewById(R.id.copy_output);
 
         // Start Python
         if (! Python.isStarted())
@@ -82,97 +79,92 @@ public class ExecuteCodeTab extends Fragment
         }
 
         // Add input listener, to add new input boxes to the tab
-        addInputButton.setOnClickListener(new View.OnClickListener()
+        addInputButton.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            // Inflate the input field layout
+            View inputFieldView = getLayoutInflater().inflate(R.layout.input_field, null);
+
+            // Get the EditText and add it to the list
+            EditText newInput = inputFieldView.findViewById(R.id.input_field);
+            inputTextList.add(newInput);
+
+            // Set the position number
+            TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
+            inputNumber.setText(String.valueOf(inputTextList.size()));
+
+            Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
+            voiceButton.setTag(inputTextList.size() - 1);  // Set the tag
+
+            voiceButton.setOnClickListener(v1 ->
             {
-                // Inflate the input field layout
-                View inputFieldView = getLayoutInflater().inflate(R.layout.input_field, null);
+                int requestCode = (int) v1.getTag();  // Get the requestCode from the tag
+                startVoiceRecognitionActivity(requestCode);
+            });
 
-                // Get the EditText and add it to the list
-                EditText newInput = inputFieldView.findViewById(R.id.input_field);
-                inputTextList.add(newInput);
-
-                // Set the position number
-                TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
-                inputNumber.setText(String.valueOf(inputTextList.size()));
-
-                Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
-                voiceButton.setTag(inputTextList.size() - 1);  // Set the tag
-
-                voiceButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        int requestCode = (int) v.getTag();  // Get the requestCode from the tag
-                        startVoiceRecognitionActivity(requestCode);
-                    }
-                });
-
-                // Add the layout to the LinearLayout and the list
-                inputContainer.addView(inputFieldView);
-                inputViewList.add(inputFieldView);
-            }
+            // Add the layout to the LinearLayout and the list
+            inputContainer.addView(inputFieldView);
+            inputViewList.add(inputFieldView);
         });
 
         // Remove input listener, to remove input boxes from the tab
-        removeInputButton.setOnClickListener(new View.OnClickListener()
+        removeInputButton.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
+            // Remove the last view from the LinearLayout and the list
+            if (!inputViewList.isEmpty())
             {
-                // Remove the last view from the LinearLayout and the list
-                if (!inputViewList.isEmpty())
-                {
-                    View lastView = inputViewList.get(inputViewList.size() - 1);
-                    inputContainer.removeView(lastView);
-                    inputViewList.remove(lastView);
+                View lastView = inputViewList.get(inputViewList.size() - 1);
+                inputContainer.removeView(lastView);
+                inputViewList.remove(lastView);
 
-                    // Also remove the corresponding EditText from the list
-                    if (!inputTextList.isEmpty())
-                    {
-                        inputTextList.remove(inputTextList.size() - 1);
-                    }
+                // Also remove the corresponding EditText from the list
+                if (!inputTextList.isEmpty())
+                {
+                    inputTextList.remove(inputTextList.size() - 1);
                 }
             }
         });
 
 
         // Run code button listener to fetch code, inputs and execute
-        runCodeButton.setOnClickListener(new View.OnClickListener()
+        runCodeButton.setOnClickListener(view1 ->
         {
-            @Override
-            public void onClick(View view)
+            try
             {
-                try
+                // get python instance and script to run user code in
+                Python PyInstance = Python.getInstance();
+                PyObject pyScriptObject = PyInstance.getModule("CodeScript");
+
+                // Get input data from widgets
+                List<String> inputLines = new ArrayList<>();
+                for (View inputFieldView : inputViewList)
                 {
-                    // get python instance and script to run user code in
-                    Python PyInstance = Python.getInstance();
-                    PyObject pyScriptObject = PyInstance.getModule("CodeScript");
-
-                    // Get input data from widgets
-                    List<String> inputLines = new ArrayList<>();
-                    for (View inputFieldView : inputViewList)
-                    {
-                        EditText inputField = inputFieldView.findViewById(R.id.input_field);
-                        inputLines.add(inputField.getText().toString());
-                    }
-
-                    // call main function in python script, pass in user code and input data
-                    PyObject pyObj = pyScriptObject.callAttr("main", codeInputText.getText().toString(), inputLines.toArray(new String[0]));
-
-                    // set code output widget to result of executing python code
-                    codeOutputText.setText(pyObj.toString());
-
-                    // catch exceptions when running code and log error to logcat
+                    EditText inputField = inputFieldView.findViewById(R.id.input_field);
+                    inputLines.add(inputField.getText().toString());
                 }
-                catch (Exception e)
-                {
-                    Log.e("Py Code Exec Error", "Error: " + e.getMessage());
-                }
+
+                // call main function in python script, pass in user code and input data
+                PyObject pyObj = pyScriptObject.callAttr("main", codeInputText.getText().toString(), inputLines.toArray(new String[0]));
+
+                // set code output widget to result of executing python code
+                codeOutputText.setText(pyObj.toString());
+
+                // catch exceptions when running code and log error to logcat
             }
+            catch (Exception e)
+            {
+                Log.e("Py Code Exec Error", "Error: " + e.getMessage());
+            }
+        });
+
+        copyOutputButton.setOnClickListener(view1 ->
+        {
+            // Get the ClipboardManager service
+            ClipboardManager clipboard = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+
+            // Create a ClipData object holding the text from codeOutputText
+            ClipData clip = ClipData.newPlainText("codeOutput", codeOutputText.getText().toString());
+
+            clipboard.setPrimaryClip(clip);
         });
 
         return view;

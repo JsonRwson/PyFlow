@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        tabLayout.getTabAt(0).setIcon(R.drawable.code_icon);
+        tabLayout.getTabAt(1).setIcon(R.drawable.play_icon);
+
         // Disable swiping to switch tabs
         viewPager.setPagingEnabled(false);
     }

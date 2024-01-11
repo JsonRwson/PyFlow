@@ -8,17 +8,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <TextView
+        android:id="@+id/var_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="New Variable"
+        android:text="Update Variable"
         android:padding="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="Name"
+        android:text="Operation"
         android:paddingBottom="5dp"
         android:paddingLeft="15dp"/>
 
@@ -29,23 +30,13 @@
         android:paddingRight="20dp"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/var_name"
-            android:layout_width="170dp"
-            android:layout_height="wrap_content"
-            android:minLines="1"
-            android:maxLines="3"
-            android:layout_margin="5dp"
-            android:padding="5dp"
-            android:background="@drawable/input_field_text_bg"/>
-
-        <Button
-            android:id="@+id/var_name_voice"
-            android:layout_width="40dp"
+        <Spinner
+            android:id="@+id/oper_dropdown"
+            android:layout_width="100dp"
             android:layout_height="40dp"
-            android:layout_margin="5dp"
-            app:backgroundTint="@null"
-            android:background="@drawable/microphone_icon"/>
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"
+            android:dropDownHeight="40dp"/>
 
     </LinearLayout>
 
@@ -53,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="Value"
+        android:text="New Value"
         android:paddingBottom="5dp"
         android:paddingLeft="15dp"/>
 
@@ -64,8 +55,8 @@
         android:paddingRight="20dp"
         android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/var_val"
+        <AutoCompleteTextView
+            android:id="@+id/var_value"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:minLines="1"
@@ -81,6 +72,7 @@
             android:layout_margin="5dp"
             app:backgroundTint="@null"
             android:background="@drawable/microphone_icon"/>
+
     </LinearLayout>
 
     <LinearLayout

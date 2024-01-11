@@ -6,5 +6,6 @@
     <color name="text_editor_bg">#4F4F4F</color>
     <color name="text_editor_bg_alt">#353535</color>
     <color name="page_bg">#E1F0F8</color>
+    <color name="dialog_bg">#b1b1b1</color>
 
 </resources>

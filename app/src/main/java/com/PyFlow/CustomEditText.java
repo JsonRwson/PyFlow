@@ -1,24 +1,20 @@
 package com.PyFlow;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.Spannable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.inputmethod.InputMethodManager;
+import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
@@ -27,6 +23,11 @@ import java.util.regex.Pattern;
 public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 {
     private TextView lineNumbers;
+    private String lineNumbersString = "";
+    private List<Integer> lineNumbersList = new ArrayList<>();
+    private Set<Integer> modifiedLines = new HashSet<>();
+    private int previousLineCount = 0;
+    private int currentLineCount = 0;
 
     public CustomEditText(Context context, AttributeSet attrs)
     {
@@ -48,80 +49,70 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         final int COLOR_STRINGS = Color.parseColor("#A5C261");
         final int COLOR_FUNCTIONS = Color.parseColor("#9C93F5");
 
+        final List<ForegroundColorSpan> spans = new ArrayList<>();
+
         // Add a TextWatcher to update the line numbers
         addTextChangedListener(new TextWatcher()
         {
-            int cursorPosition;
-            int previousLength = 0;
-
             // Syntax highlighting =========================================================
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after)
             {
-                previousLength = s.length();
+                previousLineCount = getLineCount();
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
-            {}
+            {
+                int startLine = getLayout().getLineForOffset(start);
+                int endLine = getLayout().getLineForOffset(start + count);
 
-            List<ForegroundColorSpan> spans = new ArrayList<>();
+                for (int i = startLine; i <= endLine; i++)
+                {
+                    modifiedLines.add(i);
+                }
+            }
+
             @Override
             public void afterTextChanged(Editable s)
             {
-                // Check if a newline character was added
-                if (s.length() > 0 && s.charAt(s.length() - 1) == '\n' || s.length() < previousLength)
+                currentLineCount = getLineCount();
+                if(previousLineCount != currentLineCount)
                 {
-                    updateLineNumbers();
+                    updateLineNumbers(currentLineCount);
                 }
-                else
-                {
-                    // Get the current line count
-                    int currentLineCount = getLineCount();
 
-                    // Ensure at least 1st line number is shown
-                    if (getText().length() == 0)
+                for (int line : modifiedLines)
+                {
+                    int start = getLayout().getLineStart(line);
+                    int end = getLayout().getLineEnd(line);
+                    CharSequence lineText = s.subSequence(start, end);
+
+                    // Remove all previous spans in this line to prevent overlapping styles
+                    ForegroundColorSpan[] oldSpans = s.getSpans(start, end, ForegroundColorSpan.class);
+                    for (ForegroundColorSpan span : oldSpans)
                     {
-                        currentLineCount = 1;
+                        s.removeSpan(span);
                     }
 
-                    // Only update the line numbers if the line count has changed
-                    if (currentLineCount != lineNumbers.getLineCount())
-                    {
-                        updateLineNumbers();
-                    }
+                    // Apply syntax highlighting to this line
+                    highlightSyntax(s, lineText, start, PATTERN_KEYWORDS, COLOR_KEYWORDS);
+                    highlightSyntax(s, lineText, start, PATTERN_FUNCTIONS, COLOR_FUNCTIONS);
+                    highlightSyntax(s, lineText, start, PATTERN_STRINGS, COLOR_STRINGS);
+                    highlightSyntax(s, lineText, start, PATTERN_COMMENTS, COLOR_COMMENTS);
                 }
 
-                // Syntax highlighting for python
-                // Remove all previous spans to prevent overlapping styles
-                for (ForegroundColorSpan span : spans)
-                {
-                    s.removeSpan(span);
-                }
-                spans.clear();
-
-                // The ordering of highlighting is important here
-                // Highlight Python keywords
-                highlightSyntax(s, PATTERN_KEYWORDS, COLOR_KEYWORDS);
-
-                // Highlight function calls
-                highlightSyntax(s, PATTERN_FUNCTIONS, COLOR_FUNCTIONS);
-
-                // Highlight strings
-                highlightSyntax(s, PATTERN_STRINGS, COLOR_STRINGS);
-
-                // Highlight comments
-                highlightSyntax(s, PATTERN_COMMENTS, COLOR_COMMENTS);
+                modifiedLines.clear();
             }
 
-            private void highlightSyntax(Editable s, Pattern pattern, int color)
+            private void highlightSyntax(Editable s, CharSequence lineText, int start, Pattern pattern, int color)
             {
-                Matcher matcher = pattern.matcher(s);
+                Matcher matcher = pattern.matcher(lineText);
+
                 while (matcher.find())
                 {
                     ForegroundColorSpan span = new ForegroundColorSpan(color);
-                    s.setSpan(span, matcher.start(), matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spans.add(span);
+                    s.setSpan(span, start + matcher.start(), start + matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
         });
@@ -140,28 +131,36 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
     public void setLineNumberView(TextView lineNumberView)
     {
         this.lineNumbers = lineNumberView;
-        updateLineNumbers();
+        updateLineNumbers(1);
     }
 
-    public void updateLineNumbers()
+    public void updateLineNumbers(int lineCount)
     {
         if (lineNumbers != null)
         {
-            StringBuilder numbers = new StringBuilder();
-            int lineCount = getLineCount();
-
-            // Ensure at least 1st line number is shown
-            if (getText().length() == 0)
+            // If the line count has increased, add the new line numbers
+            for (int i = lineNumbersList.size() + 1; i <= lineCount; i++)
             {
-                lineCount = 1;
+                lineNumbersList.add(i);
+
+                if (i == 1)
+                {
+                    lineNumbersString += i;
+                }
+                else
+                {
+                    lineNumbersString += "\n" + i;
+                }
             }
 
-            for (int i = 1; i <= lineCount; i++)
-            {
-                numbers.append(i).append("\n");
+            // If the line count has decreased, remove the extra line numbers
+            while (lineNumbersList.size() > lineCount) {
+                lineNumbersList.remove(lineNumbersList.size() - 1);
+                lineNumbersString = lineNumbersString.substring(0, lineNumbersString.lastIndexOf("\n"));
             }
 
-            lineNumbers.setText(numbers.toString());
+            // Update the line numbers view
+            lineNumbers.setText(lineNumbersString);
         }
     }
 }

@@ -61,7 +61,7 @@
                     android:paddingBottom="0dp"
                     android:singleLine="true"
                     android:text="Goto"
-                    android:textColor="@color/black"
+                    android:textColor="#0069ff"
                     app:backgroundTint="@null" />
 
                 <Button
@@ -79,7 +79,7 @@
                     android:paddingBottom="0dp"
                     android:singleLine="true"
                     android:text="Paste"
-                    android:textColor="@color/black"
+                    android:textColor="#0069ff"
                     app:backgroundTint="@null" />
 
                 <Button
@@ -96,8 +96,8 @@
                     android:paddingEnd="5dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="Assign"
-                    android:textColor="@color/black"
+                    android:text="Update"
+                    android:textColor="#0069ff"
                     app:backgroundTint="@null" />
 
             </LinearLayout>
@@ -114,13 +114,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Definitions"
-                    android:textSize="18dp" />
+                    android:text="Variables"
+                    android:textSize="15dp"
+                    android:textColor="#0069ff"/>
 
                 <Button
                     android:id="@+id/var_def_refresh"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
                     android:layout_margin="5dp"
                     android:background="@drawable/refresh_icon"
                     android:paddingStart="10dp"
@@ -170,7 +171,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="Keys"
-                    android:textSize="18dp" />
+                    android:textSize="15dp" />
 
                 <Button
                     android:id="@+id/var_keys_collapse"
@@ -199,6 +200,7 @@
 
                 <TableRow>
                     <Button android:text="global"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -206,6 +208,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="nonlocal"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -213,6 +216,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="None"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -220,6 +224,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="True"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -227,6 +232,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="False"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -237,6 +243,7 @@
 
                 <TableRow>
                     <Button android:text="self"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -244,6 +251,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="+"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -251,6 +259,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="-"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -258,6 +267,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="["
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -265,6 +275,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="]"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -275,6 +286,7 @@
 
                 <TableRow>
                     <Button android:text="!"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -282,6 +294,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="="
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -289,6 +302,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="&quot;"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -296,6 +310,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="{"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -303,6 +318,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="}"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -313,6 +329,7 @@
 
                 <TableRow>
                     <Button android:text="_"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -320,6 +337,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text=","
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -327,6 +345,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="\\"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -334,6 +353,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="("
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -341,6 +361,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text=")"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -351,6 +372,7 @@
 
                 <TableRow>
                     <Button android:text="'"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -358,6 +380,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text=":"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -365,6 +388,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="/"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -372,6 +396,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="."
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"
@@ -379,6 +404,7 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="*"
+                        android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
                         app:backgroundTint="@null"

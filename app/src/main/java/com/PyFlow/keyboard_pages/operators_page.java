@@ -5,9 +5,9 @@ import android.view.View;
 import com.PyFlow.CustomEditText;
 import com.PyFlow.SourcecodeTab;
 
-public class snippets_page
+public class operators_page extends Page
 {
-    public snippets_page(View view, SourcecodeTab activity, CustomEditText source)
+    public operators_page(View view, SourcecodeTab activity, CustomEditText source)
     {
 
     }

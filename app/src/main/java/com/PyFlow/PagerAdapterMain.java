@@ -35,14 +35,6 @@ public class PagerAdapterMain extends FragmentPagerAdapter
     @Override
     public CharSequence getPageTitle(int position)
     {
-        // Set the title for each tab
-        switch (position) {
-            case 0:
-                return "Source";
-            case 1:
-                return "Execute";
-            default:
-                return null;
-        }
+        return null;
     }
 }

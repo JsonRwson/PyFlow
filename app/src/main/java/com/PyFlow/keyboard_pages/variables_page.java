@@ -1,49 +1,84 @@
 package com.PyFlow.keyboard_pages;
+import static android.app.Activity.RESULT_OK;
+
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.PyFlow.CustomEditText;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class variables_page
+public class variables_page extends Page
 {
     private HashMap<String, Integer> variableDefinitions;
+    private SourcecodeTab activity;
+    private FragmentActivity fragmentActivity;
+
     private CustomEditText sourceCode;
     private View page;
     private TextView selectedTextView;
 
-    public variables_page(View view, SourcecodeTab activity,CustomEditText source)
+    private TableLayout variablesDefTable;
+    private TableLayout variablesKeyTable;
+
+    private Button newVariableButton;
+    private Button refreshDefinitionsButton;
+    private Button collapseDefinitionsButton;
+    private Button collapseKeysButton;
+    private Button gotoVarButton;
+    private Button updateVarButton;
+    private Button pasteVarButton;
+
+    private String selectedVariable;
+    private int originalSoftInputMode;
+    private static final int SPEECH_REQUEST_CODE = 0;
+
+    public variables_page(View view, SourcecodeTab activity, CustomEditText source)
     {
         this.sourceCode = source;
         this.page = view;
+        this.activity = activity;
+        this.fragmentActivity = activity.getActivity();
+        this.originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
 
-        TableLayout variablesDefTable = page.findViewById(R.id.var_def_table);
-        TableLayout variablesKeyTable = page.findViewById(R.id.var_keys_table);
+        this.variablesDefTable = page.findViewById(R.id.var_def_table);
+        this.variablesKeyTable = page.findViewById(R.id.var_keys_table);
 
-        Button newVariableButton = page.findViewById(R.id.new_var);
-        Button refreshDefinitionsButton = page.findViewById(R.id.var_def_refresh);
-        Button collapseDefinitionsButton = page.findViewById(R.id.var_def_collapse);
-        Button collapseKeysButton = page.findViewById(R.id.var_keys_collapse);
-        Button gotoVarButton = page.findViewById(R.id.var_goto);
+        this.newVariableButton = page.findViewById(R.id.new_var);
+        this.refreshDefinitionsButton = page.findViewById(R.id.var_def_refresh);
+        this.collapseDefinitionsButton = page.findViewById(R.id.var_def_collapse);
+        this.collapseKeysButton = page.findViewById(R.id.var_keys_collapse);
+        this.gotoVarButton = page.findViewById(R.id.var_goto);
+        this.updateVarButton = page.findViewById(R.id.var_assign);
+        this.pasteVarButton = page.findViewById(R.id.var_paste);
+
 
         for (int i = 0; i < variablesKeyTable.getChildCount(); i++)
         {
@@ -63,7 +98,7 @@ public class variables_page
                             String text = button.getText().toString();
                             // Insert the text at the current cursor position
                             int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, text + " ");
+                            sourceCode.getText().insert(start, text);
                         });
                     }
                 }
@@ -76,19 +111,37 @@ public class variables_page
             Dialog dialog = new Dialog(activity.getContext());
             // Set the custom layout for the dialog
             dialog.setContentView(R.layout.dialog_newvar);
+
             if(dialog.getWindow() != null)
             {
                 dialog.getWindow().setDimAmount(0.6f);
+                fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             }
-            // Find the views in your layout
-            EditText editText = dialog.findViewById(R.id.edit_text);
-            Button okButton = dialog.findViewById(R.id.ok_button);
-            // Set an OnClickListener for the OK button
 
-            okButton.setOnClickListener(v1 ->
+            // Find the views
+            EditText varName = dialog.findViewById(R.id.var_name);
+            EditText varVal = dialog.findViewById(R.id.var_val);
+
+            Button applyButton = dialog.findViewById(R.id.var_apply);
+            Button cancelButton = dialog.findViewById(R.id.var_cancel);
+            Button nameVoice = dialog.findViewById(R.id.var_name_voice);
+            Button valueVoice = dialog.findViewById(R.id.var_val_voice);
+
+            nameVoice.setOnClickListener(v1 ->
+            {
+                displaySpeechRecognizer(varName);
+            });
+
+            valueVoice.setOnClickListener(v1 ->
+            {
+                displaySpeechRecognizer(varVal);
+            });
+
+            applyButton.setOnClickListener(v1 ->
             {
                 // Get the text from the EditText
-                String text = editText.getText().toString();
+                String text = varName.getText().toString() + " = " + varVal.getText().toString();
+
                 // Insert the text at the current cursor position
                 int start = sourceCode.getSelectionStart();
                 sourceCode.getText().insert(start, text);
@@ -96,15 +149,99 @@ public class variables_page
                 dialog.dismiss();
             });
 
-            // Show the dialog
+            cancelButton.setOnClickListener(v1 ->
+            {
+                dialog.dismiss();
+            });
+
+            dialog.setOnDismissListener(v2 ->
+            {
+                updateVariablesTable();
+                fragmentActivity.getWindow().setSoftInputMode(originalSoftInputMode);
+            });
+
             dialog.show();
+        });
+
+        updateVarButton.setOnClickListener(v ->
+        {
+            if(selectedTextView != null)
+            {
+                selectedVariable = selectedTextView.getText().toString();
+
+                // Create a new dialog
+                Dialog dialog = new Dialog(activity.getContext());
+                // Set the custom layout for the dialog
+                dialog.setContentView(R.layout.dialog_updatevar);
+
+                if(dialog.getWindow() != null)
+                {
+                    dialog.getWindow().setDimAmount(0.6f);
+                    fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                }
+
+                // Find the views
+                TextView varName = dialog.findViewById(R.id.var_title);
+                EditText varValUpdate = dialog.findViewById(R.id.var_value);
+
+                Spinner varOper = dialog.findViewById(R.id.oper_dropdown);
+                String[] items = new String[]{"=", "+=", "-=", "*=", "/=", "%=", "//=", "**=", "&=", "|=", "^=", ">>=", "<<="};
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(activity.getContext(), android.R.layout.simple_spinner_dropdown_item, items);
+                varOper.setAdapter(adapter);
+
+                Button applyButton = dialog.findViewById(R.id.var_apply);
+                Button cancelButton = dialog.findViewById(R.id.var_cancel);
+                Button valVoice = dialog.findViewById(R.id.var_val_voice);
+
+                varName.setText("Update: " + selectedVariable);
+
+                valVoice.setOnClickListener(v1 ->
+                {
+                    displaySpeechRecognizer(varValUpdate);
+                });
+
+                applyButton.setOnClickListener(v1 ->
+                {
+                    // Get the text from the EditText
+                    String text = selectedVariable + " " + varOper.getSelectedItem().toString() + " " + varValUpdate.getText().toString();
+
+                    // Insert the text at the current cursor position
+                    int start = sourceCode.getSelectionStart();
+                    sourceCode.getText().insert(start, text);
+                    // Dismiss the dialog
+                    dialog.dismiss();
+                });
+
+                cancelButton.setOnClickListener(v1 ->
+                {
+                    dialog.dismiss();
+                });
+
+                dialog.setOnDismissListener(v1 ->
+                {
+                    updateVariablesTable();
+                    fragmentActivity.getWindow().setSoftInputMode(originalSoftInputMode);
+                });
+
+                dialog.show();
+            }
+        });
+
+        pasteVarButton.setOnClickListener(v ->
+        {
+            if (selectedTextView != null)
+            {
+                selectedVariable = selectedTextView.getText().toString();
+                int start = sourceCode.getSelectionStart();
+                sourceCode.getText().insert(start, selectedVariable);
+            }
         });
 
         gotoVarButton.setOnClickListener(v ->
         {
             if (selectedTextView != null)
             {
-                String selectedVariable = selectedTextView.getText().toString();
+                selectedVariable = selectedTextView.getText().toString();
                 if (variableDefinitions.containsKey(selectedVariable))
                 {
                     int var_pos = variableDefinitions.get(selectedVariable);
@@ -113,68 +250,12 @@ public class variables_page
             }
         });
 
-
         // Refresh definitions of variables
         // Fetch all first instances of variable definitions, add them to the hash table with their position
         // Then add them as elements to be viewed in the table layout
         refreshDefinitionsButton.setOnClickListener(v ->
         {
-            variableDefinitions = updateVariableDefinitions();
-
-            // Clear the table first
-            variablesDefTable.removeAllViews();
-
-            // Create a new LinearLayout for every three variables
-            LinearLayout linearLayout = null;
-
-            int i = 0;
-            for (String variable : variableDefinitions.keySet())
-            {
-                if (i % 3 == 0)
-                {
-                    linearLayout = new LinearLayout(activity.getActivity());
-                    linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                    variablesDefTable.addView(linearLayout);
-                }
-
-                // Create a new TextView for the variable
-                TextView textView = new TextView(activity.getActivity());
-                textView.setText(variable);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                textView.setGravity(Gravity.CENTER);
-                textView.setPadding(0, 10, 0, 10);
-                textView.setMaxLines(1);
-                textView.setEllipsize(TextUtils.TruncateAt.END);
-                textView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
-
-                // Set layout parameters for equal spacing
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-                textView.setLayoutParams(params);
-
-                // Add an OnClickListener to the TextView
-                textView.setClickable(true);
-                textView.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        // Deselect the previously selected TextView, if any
-                        if (selectedTextView != null)
-                        {
-                            selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));;
-                        }
-
-                        // Select the clicked TextView
-                        selectedTextView = (TextView) v;
-                        selectedTextView.setBackgroundColor(Color.LTGRAY);
-                    }
-                });
-
-                linearLayout.addView(textView);
-
-                i++;
-            }
+            updateVariablesTable();
         });
 
         // Use a one element array because lambda variables should be final
@@ -222,20 +303,80 @@ public class variables_page
         });
     }
 
-    private HashMap<String, Integer> updateVariableDefinitions()
+    private void updateVariablesTable()
+    {
+        variableDefinitions = updateVariablesMap();
+
+        // Reset selected values
+        selectedVariable = null;
+        selectedTextView = null;
+
+        // Clear the table
+        variablesDefTable.removeAllViews();
+
+        // Create a new LinearLayout for every three variables
+        LinearLayout linearLayout = null;
+
+        int i = 0;
+        for (String variable : variableDefinitions.keySet())
+        {
+            if (i % 3 == 0)
+            {
+                linearLayout = new LinearLayout(activity.getActivity());
+                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+                variablesDefTable.addView(linearLayout);
+            }
+
+            // Create a new TextView for the variable
+            TextView textView = new TextView(activity.getActivity());
+            textView.setText(variable);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+            textView.setGravity(Gravity.CENTER);
+            textView.setPadding(0, 10, 0, 10);
+            textView.setMaxLines(1);
+            textView.setEllipsize(TextUtils.TruncateAt.END);
+            textView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
+
+            // Set layout parameters for equal spacing
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+            textView.setLayoutParams(params);
+
+            // Add an OnClickListener to the TextView
+            textView.setClickable(true);
+            textView.setOnClickListener(v ->
+            {
+                // Deselect the previously selected TextView
+                if (selectedTextView != null)
+                {
+                    selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));;
+                }
+
+                // Select the clicked TextView
+                selectedTextView = (TextView) v;
+                selectedTextView.setBackgroundColor(Color.LTGRAY);
+            });
+
+            linearLayout.addView(textView);
+
+            i++;
+        }
+    }
+
+    private HashMap<String, Integer> updateVariablesMap()
     {
         HashMap<String, Integer> variableDefinitions = new HashMap<>();
         String text = sourceCode.getText().toString();
         String[] lines = text.split("\\n");
-        Pattern pattern = Pattern.compile("(\\w+(, \\w+)*)\\s*=\\s*.*");
+        Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*.*");
 
         int index = 0;
         for (int i = 0; i < lines.length; i++)
         {
             String line = lines[i].trim();
-            if (line.startsWith("#") || line.contains(" for ") || line.contains(" if ")) // ignore comments and complex expressions
+            if (line.startsWith("#") || line.contains("for ") || line.contains("if ") || line.contains("while ") || line.contains("elif ")) // ignore comments and complex expressions
             {
-                index += line.length() + 1; // +1 for newline character
+                index += line.length() + 1;
                 continue;
             }
 
@@ -243,21 +384,27 @@ public class variables_page
 
             if (matcher.find())
             {
-                String[] variables = matcher.group(1).split(", ");
+                String variable = matcher.group(1);
 
-                for (String variable : variables)
+                if (!variableDefinitions.containsKey(variable))
                 {
-                    if (!variableDefinitions.containsKey(variable))
-                    {
-                        variableDefinitions.put(variable, index + line.indexOf(variable));
-                    }
+                    variableDefinitions.put(variable, index + line.indexOf(variable));
                 }
             }
 
-            index += line.length() + 1; // +1 for newline character
+            index += line.length() + 1;
         }
 
         return variableDefinitions;
     }
 
+    // start the speech recognizer
+    private void displaySpeechRecognizer(EditText editText)
+    {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+
+        this.voiceEditText = editText;
+        activity.startActivityForResult(intent, SPEECH_REQUEST_CODE);
+    }
 }
