@@ -145,6 +145,7 @@ public class variables_page extends Page
                 // Insert the text at the current cursor position
                 int start = sourceCode.getSelectionStart();
                 sourceCode.getText().insert(start, text);
+
                 // Dismiss the dialog
                 dialog.dismiss();
             });
@@ -368,6 +369,9 @@ public class variables_page extends Page
         HashMap<String, Integer> variableDefinitions = new HashMap<>();
         String text = sourceCode.getText().toString();
         String[] lines = text.split("\\n");
+
+        // Pattern to find variables, match zero or more word characters, then whitespace, then equals, then whitespace followed by anything
+        // Capture group is the name of the variable
         Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*.*");
 
         int index = 0;
@@ -405,6 +409,7 @@ public class variables_page extends Page
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 
         this.voiceEditText = editText;
+
         activity.startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 }

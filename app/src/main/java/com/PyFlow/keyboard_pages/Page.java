@@ -8,6 +8,9 @@ public abstract class Page
 
     public void setEditText(String text)
     {
-        this.voiceEditText.setText(text);
+        if (this.voiceEditText != null)
+        {
+            this.voiceEditText.setText(text);
+        }
     }
 }

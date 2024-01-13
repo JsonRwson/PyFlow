@@ -116,7 +116,7 @@ public class ExecuteCodeTab extends Fragment
                 inputContainer.removeView(lastView);
                 inputViewList.remove(lastView);
 
-                // Also remove the corresponding EditText from the list
+                // Also remove the EditText from the list
                 if (!inputTextList.isEmpty())
                 {
                     inputTextList.remove(inputTextList.size() - 1);

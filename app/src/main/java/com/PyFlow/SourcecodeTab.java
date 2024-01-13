@@ -37,7 +37,7 @@ import java.util.List;
 
 public class SourcecodeTab extends Fragment
 {
-    private int mode = 0; // 0 for keyboard closed, 1 for keyboard open, 2 for keyboard closed
+    private int mode = 0; // 3 modes, custom keyboard, default keyboard, no keyboards
     private CustomEditText sourceCode;
     private LinearLayout keyboardPanel;
     private Button[] pageNavButtons;

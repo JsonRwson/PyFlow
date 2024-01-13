@@ -38,9 +38,17 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         final String[] KEYWORDS = {"and", "as", "assert", "break", "class", "continue", "def", "del", "elif", "else", "except",
                 "False", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "None", "nonlocal", "not", "or",
                 "pass", "raise", "return", "True", "try", "while", "with", "yield", "async", "await"};
+
+        // Match any words in the keywords array
         final Pattern PATTERN_KEYWORDS = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+
+        // Match zero or more characters after a hash, not include newlines
         final Pattern PATTERN_COMMENTS = Pattern.compile("#.*");
+
+        // Match zero or more characters between double, triple and single quotes
         final Pattern PATTERN_STRINGS = Pattern.compile("\".*?\"|'.*?'|\"\"\".*?\"\"\"|'''.*?'''");
+
+        // Match only whole words followed open and close brackets
         final Pattern PATTERN_FUNCTIONS = Pattern.compile("\\b\\w+(?=\\s*\\()");
 
         // Colours for highlighting different elements
