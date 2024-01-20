@@ -4,19 +4,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.Spannable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
-import android.view.View;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +20,8 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 {
     private TextView lineNumbers;
     private String lineNumbersString = "";
-    private List<Integer> lineNumbersList = new ArrayList<>();
-    private Set<Integer> modifiedLines = new HashSet<>();
+    private final List<Integer> lineNumbersList = new ArrayList<>();
+    private final Set<Integer> modifiedLines = new HashSet<>();
     private int previousLineCount = 0;
     private int currentLineCount = 0;
 
@@ -56,8 +52,6 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         final int COLOR_COMMENTS = Color.parseColor("#A7A8A8");
         final int COLOR_STRINGS = Color.parseColor("#A5C261");
         final int COLOR_FUNCTIONS = Color.parseColor("#9C93F5");
-
-        final List<ForegroundColorSpan> spans = new ArrayList<>();
 
         // Add a TextWatcher to update the line numbers
         addTextChangedListener(new TextWatcher()
@@ -109,7 +103,6 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
                     highlightSyntax(s, lineText, start, PATTERN_STRINGS, COLOR_STRINGS);
                     highlightSyntax(s, lineText, start, PATTERN_COMMENTS, COLOR_COMMENTS);
                 }
-
                 modifiedLines.clear();
             }
 

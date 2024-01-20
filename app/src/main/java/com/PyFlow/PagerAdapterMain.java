@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 public class PagerAdapterMain extends FragmentPagerAdapter
 {
-    private SourcecodeTab sourcecodeTabFragment;
 
     public PagerAdapterMain(FragmentManager fm) {
         super(fm);
@@ -18,8 +17,7 @@ public class PagerAdapterMain extends FragmentPagerAdapter
         switch(position)
         {
             case 0:
-                sourcecodeTabFragment = new SourcecodeTab();
-                return sourcecodeTabFragment;
+                return new SourcecodeTab();
             case 1:
                 return new ExecuteCodeTab();
             default:

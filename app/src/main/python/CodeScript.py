@@ -1,6 +1,5 @@
 import sys
 from os.path import dirname, join
-from uu import Error
 from com.chaquo.python import Python
 import builtins
 
@@ -38,13 +37,32 @@ def main(CodeInputData, inputLines):
 
             else:
                 return ""
-        
+
         # Replace the standard input function with the custom one which uses input data from the widget
         builtins.input = custom_input
+
+        # Limit the number of lines that can be printed
+        max_prints = 10000
+        old_print = print
+
+        def limited_print(*args, **kwargs):
+            nonlocal max_prints
+            if max_prints > 0:
+                old_print(*args, **kwargs)
+                max_prints -= 1
+
+        # Replace the standard print function with the custom one which limits print size to prevent memory errors
+        builtins.print = limited_print
 
         # execute the user written python code
         exec(CodeInputData)
 
+    # catch exceptions and replace the output with the caught exception message
+    except Exception as error:
+        sys.stdout = original_stdout
+        output = error
+
+    finally:
         # close the output stream
         sys.stdout.close()
 
@@ -53,10 +71,5 @@ def main(CodeInputData, inputLines):
 
         # read the result of running the code from the file it outputted to
         output = open(filename, 'r').read()
-
-    # catch exceptions and replace the output with the caught exception message
-    except Exception as error:
-        sys.stdout = original_stdout
-        output = error
 
     return str(output) # return code output

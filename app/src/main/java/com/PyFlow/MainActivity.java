@@ -16,11 +16,6 @@ import com.google.android.material.tabs.TabLayout;
 public class MainActivity extends AppCompatActivity
 {
     private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle drawerToggle;
-    private NavigationView navigationView;
-    private CustomViewPager viewPager;
-
-    private SourcecodeTab sourcecodeTabFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,11 +27,11 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        navigationView = findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(item ->
         {
             int id = item.getItemId();
@@ -52,7 +47,7 @@ public class MainActivity extends AppCompatActivity
             return true;
         });
 
-        viewPager = findViewById(R.id.view_pager);
+        CustomViewPager viewPager = findViewById(R.id.view_pager);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         PagerAdapter pagerAdapter = new PagerAdapterMain(getSupportFragmentManager());
         viewPager.setAdapter(pagerAdapter);

@@ -1,13 +1,8 @@
 package com.PyFlow.keyboard_pages;
-import static android.app.Activity.RESULT_OK;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
-import android.speech.RecognizerIntent;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -21,8 +16,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -31,79 +24,43 @@ import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class variables_page extends Page
+public class variables_page
 {
     private HashMap<String, Integer> variableDefinitions;
-    private SourcecodeTab activity;
-    private FragmentActivity fragmentActivity;
+    private final SourcecodeTab activity;
+    private final FragmentActivity fragmentActivity;
 
-    private CustomEditText sourceCode;
-    private View page;
+    private final CustomEditText sourceCode;
     private TextView selectedTextView;
 
-    private TableLayout variablesDefTable;
-    private TableLayout variablesKeyTable;
-
-    private Button newVariableButton;
-    private Button refreshDefinitionsButton;
-    private Button collapseDefinitionsButton;
-    private Button collapseKeysButton;
-    private Button gotoVarButton;
-    private Button updateVarButton;
-    private Button pasteVarButton;
+    private final TableLayout variablesDefTable;
+    private final TableLayout variablesKeyTable;
 
     private String selectedVariable;
-    private int originalSoftInputMode;
-    private static final int SPEECH_REQUEST_CODE = 0;
+    private final int originalSoftInputMode;
 
     public variables_page(View view, SourcecodeTab activity, CustomEditText source)
     {
         this.sourceCode = source;
-        this.page = view;
         this.activity = activity;
         this.fragmentActivity = activity.getActivity();
         this.originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
 
-        this.variablesDefTable = page.findViewById(R.id.var_def_table);
-        this.variablesKeyTable = page.findViewById(R.id.var_keys_table);
+        this.variablesDefTable = view.findViewById(R.id.var_def_table);
+        this.variablesKeyTable = view.findViewById(R.id.var_keys_table);
 
-        this.newVariableButton = page.findViewById(R.id.new_var);
-        this.refreshDefinitionsButton = page.findViewById(R.id.var_def_refresh);
-        this.collapseDefinitionsButton = page.findViewById(R.id.var_def_collapse);
-        this.collapseKeysButton = page.findViewById(R.id.var_keys_collapse);
-        this.gotoVarButton = page.findViewById(R.id.var_goto);
-        this.updateVarButton = page.findViewById(R.id.var_assign);
-        this.pasteVarButton = page.findViewById(R.id.var_paste);
+        Button newVariableButton = view.findViewById(R.id.new_var);
+        Button refreshDefinitionsButton = view.findViewById(R.id.var_def_refresh);
+        Button collapseDefinitionsButton = view.findViewById(R.id.var_def_collapse);
+        Button collapseKeysButton = view.findViewById(R.id.var_keys_collapse);
+        Button gotoVarButton = view.findViewById(R.id.var_goto);
+        Button updateVarButton = view.findViewById(R.id.var_assign);
+        Button pasteVarButton = view.findViewById(R.id.var_paste);
 
-
-        for (int i = 0; i < variablesKeyTable.getChildCount(); i++)
-        {
-            View row = variablesKeyTable.getChildAt(i);
-            if (row instanceof TableRow)
-            {
-                TableRow tableRow = (TableRow) row;
-                for (int j = 0; j < tableRow.getChildCount(); j++)
-                {
-                    View child = tableRow.getChildAt(j);
-                    if (child instanceof Button)
-                    {
-                        Button button = (Button) child;
-                        button.setOnClickListener(v ->
-                        {
-                            // Get the text from the Button
-                            String text = button.getText().toString();
-                            // Insert the text at the current cursor position
-                            int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, text);
-                        });
-                    }
-                }
-            }
-        }
+        activity.setOnclickForTableButtons(variablesKeyTable, null);
 
         newVariableButton.setOnClickListener(v ->
         {
@@ -127,19 +84,13 @@ public class variables_page extends Page
             Button nameVoice = dialog.findViewById(R.id.var_name_voice);
             Button valueVoice = dialog.findViewById(R.id.var_val_voice);
 
-            nameVoice.setOnClickListener(v1 ->
-            {
-                displaySpeechRecognizer(varName);
-            });
+            nameVoice.setOnClickListener(v1 -> activity.startVoiceInput(varName));
 
-            valueVoice.setOnClickListener(v1 ->
-            {
-                displaySpeechRecognizer(varVal);
-            });
+            valueVoice.setOnClickListener(v1 -> activity.startVoiceInput(varVal));
 
             applyButton.setOnClickListener(v1 ->
             {
-                // Get the text from the EditText
+                // Get the text from the edit text
                 String text = varName.getText().toString() + " = " + varVal.getText().toString();
 
                 // Insert the text at the current cursor position
@@ -196,14 +147,11 @@ public class variables_page extends Page
 
                 varName.setText("Update: " + selectedVariable);
 
-                valVoice.setOnClickListener(v1 ->
-                {
-                    displaySpeechRecognizer(varValUpdate);
-                });
+                valVoice.setOnClickListener(v1 -> activity.startVoiceInput(varValUpdate));
 
                 applyButton.setOnClickListener(v1 ->
                 {
-                    // Get the text from the EditText
+                    // Get the text from the edit text
                     String text = selectedVariable + " " + varOper.getSelectedItem().toString() + " " + varValUpdate.getText().toString();
 
                     // Insert the text at the current cursor position
@@ -213,10 +161,7 @@ public class variables_page extends Page
                     dialog.dismiss();
                 });
 
-                cancelButton.setOnClickListener(v1 ->
-                {
-                    dialog.dismiss();
-                });
+                cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
                 dialog.setOnDismissListener(v1 ->
                 {
@@ -254,10 +199,7 @@ public class variables_page extends Page
         // Refresh definitions of variables
         // Fetch all first instances of variable definitions, add them to the hash table with their position
         // Then add them as elements to be viewed in the table layout
-        refreshDefinitionsButton.setOnClickListener(v ->
-        {
-            updateVariablesTable();
-        });
+        refreshDefinitionsButton.setOnClickListener(v -> updateVariablesTable());
 
         // Use a one element array because lambda variables should be final
         // Toggle collapse the table for definitions
@@ -315,7 +257,7 @@ public class variables_page extends Page
         // Clear the table
         variablesDefTable.removeAllViews();
 
-        // Create a new LinearLayout for every three variables
+        // Create a new linear layout for every three variables
         LinearLayout linearLayout = null;
 
         int i = 0;
@@ -328,7 +270,7 @@ public class variables_page extends Page
                 variablesDefTable.addView(linearLayout);
             }
 
-            // Create a new TextView for the variable
+            // Create a new text ciew for the variable
             TextView textView = new TextView(activity.getActivity());
             textView.setText(variable);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
@@ -343,17 +285,17 @@ public class variables_page extends Page
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             textView.setLayoutParams(params);
 
-            // Add an OnClickListener to the TextView
+            // Add an onclick to the text view
             textView.setClickable(true);
             textView.setOnClickListener(v ->
             {
-                // Deselect the previously selected TextView
+                // Deselect the previously selected text view
                 if (selectedTextView != null)
                 {
-                    selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));;
+                    selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
                 }
 
-                // Select the clicked TextView
+                // Select the clicked text view
                 selectedTextView = (TextView) v;
                 selectedTextView.setBackgroundColor(Color.LTGRAY);
             });
@@ -375,9 +317,9 @@ public class variables_page extends Page
         Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*.*");
 
         int index = 0;
-        for (int i = 0; i < lines.length; i++)
+        for (String s : lines)
         {
-            String line = lines[i].trim();
+            String line = s.trim();
             if (line.startsWith("#") || line.contains("for ") || line.contains("if ") || line.contains("while ") || line.contains("elif ")) // ignore comments and complex expressions
             {
                 index += line.length() + 1;
@@ -400,16 +342,5 @@ public class variables_page extends Page
         }
 
         return variableDefinitions;
-    }
-
-    // start the speech recognizer
-    private void displaySpeechRecognizer(EditText editText)
-    {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        this.voiceEditText = editText;
-
-        activity.startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 }

@@ -107,6 +107,18 @@
             <Button
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
+                android:text=","
+                android:textColor="@color/black"
+                android:paddingBottom="0dp"
+                android:paddingTop="0dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/symbol_button_bg"
+                app:backgroundTint="@null"
+                android:singleLine="true"/>
+            <Button
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
                 android:text=":"
                 android:textColor="@color/black"
                 android:paddingBottom="0dp"
@@ -549,17 +561,6 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
-            android:id="@+id/nav_left"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textColor="@color/white"
-            android:padding="0dp"
-            android:background="@drawable/left_button"
-            app:backgroundTint="@null"
-            android:singleLine="true"/>
-
-        <Button
             android:id="@+id/nav_up"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -582,6 +583,17 @@
             android:singleLine="true"/>
 
         <Button
+            android:id="@+id/nav_left"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:padding="0dp"
+            android:background="@drawable/left_button"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
             android:id="@+id/nav_right"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -591,6 +603,7 @@
             android:background="@drawable/right_button"
             app:backgroundTint="@null"
             android:singleLine="true"/>
+
 
         <Button
             android:id="@+id/util_space"

@@ -1,9 +1,7 @@
 package com.PyFlow.keyboard_pages;
 
 import android.app.Dialog;
-import android.content.Intent;
 import android.graphics.Color;
-import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -29,26 +27,17 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class functions_page extends Page
+public class functions_page
 {
     private HashMap<String, Integer> functionDefinitions;
-    private SourcecodeTab activity;
-    private FragmentActivity fragmentActivity;
+    private final SourcecodeTab activity;
+    private final FragmentActivity fragmentActivity;
 
-    private TableLayout functionsDefTable;
-    private TableLayout functionCallsTable;
+    private final TableLayout functionsDefTable;
+    private final TableLayout functionCallsTable;
 
-    private CustomEditText sourceCode;
-    private View page;
+    private final CustomEditText sourceCode;
     private TextView selectedTextView;
-
-    private Button newFunctionButton;
-    private Button refreshDefinitionsButton;
-    private Button collapseDefinitionsButton;
-    private Button collapseKeysButton;
-    private Button gotoFuncButton;
-    private Button callFuncButton;
-    private Button pasteFuncButton;
 
     private List<EditText> paramTextList;
     private List<View> paramViewList;
@@ -59,28 +48,26 @@ public class functions_page extends Page
     private LinearLayout argumentInputContainer;
 
     private String selectedFunction;
-    private int originalSoftInputMode;
-    private static final int SPEECH_REQUEST_CODE = 0;
+    private final int originalSoftInputMode;
 
     public functions_page(View view, SourcecodeTab activity, CustomEditText source)
     {
         this.sourceCode = source;
-        this.page = view;
 
         this.activity = activity;
         this.fragmentActivity = activity.getActivity();
         this.originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
 
-        this.functionsDefTable = page.findViewById(R.id.func_def_table);
-        this.functionCallsTable = page.findViewById(R.id.func_keys_table);
+        this.functionsDefTable = view.findViewById(R.id.func_def_table);
+        this.functionCallsTable = view.findViewById(R.id.func_keys_table);
 
-        this.newFunctionButton = page.findViewById(R.id.new_func);
-        this.refreshDefinitionsButton = page.findViewById(R.id.func_def_refresh);
-        this.collapseDefinitionsButton = page.findViewById(R.id.func_def_collapse);
-        this.collapseKeysButton = page.findViewById(R.id.func_keys_collapse);
-        this.gotoFuncButton = page.findViewById(R.id.func_goto);
-        this.callFuncButton = page.findViewById(R.id.func_call);
-        this.pasteFuncButton = page.findViewById(R.id.func_paste);
+        Button newFunctionButton = view.findViewById(R.id.new_func);
+        Button refreshDefinitionsButton = view.findViewById(R.id.func_def_refresh);
+        Button collapseDefinitionsButton = view.findViewById(R.id.func_def_collapse);
+        Button collapseKeysButton = view.findViewById(R.id.func_keys_collapse);
+        Button gotoFuncButton = view.findViewById(R.id.func_goto);
+        Button callFuncButton = view.findViewById(R.id.func_call);
+        Button pasteFuncButton = view.findViewById(R.id.func_paste);
 
         for (int i = 0; i < functionCallsTable.getChildCount(); i++)
         {
@@ -96,13 +83,15 @@ public class functions_page extends Page
                         Button button = (Button) child;
                         button.setOnClickListener(v ->
                         {
-                            // Get the text from the Button
+                            // Get the text from the button
                             String text = button.getText().toString();
+
                             // Insert the text at the current cursor position
                             int start = sourceCode.getSelectionStart();
                             sourceCode.getText().insert(start, text + "()");
 
-                            sourceCode.setSelection(start + text.length() + 2 - 1);
+                            // Move the cursor back to sit inside the parenthesis
+                            sourceCode.setSelection(start + text.length() + 1);
                         });
                     }
                 }
@@ -156,10 +145,7 @@ public class functions_page extends Page
         // Refresh definitions of functions
         // Fetch all first instances of function definitions, add them to the hash table with their position
         // Then add them as elements to be viewed in the table layout
-        refreshDefinitionsButton.setOnClickListener(v ->
-        {
-            updateFunctionsTable();
-        });
+        refreshDefinitionsButton.setOnClickListener(v -> updateFunctionsTable());
 
         newFunctionButton.setOnClickListener(v ->
         {
@@ -188,17 +174,14 @@ public class functions_page extends Page
             paramViewList = new ArrayList<>();
             paramInputContainer = dialog.findViewById(R.id.parametersContainer);
 
-            functionNameVoice.setOnClickListener(v1 ->
-            {
-                displaySpeechRecognizer(funcName);
-            });
+            functionNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(funcName));
 
             addParameterButton.setOnClickListener(v1 ->
             {
                 // Inflate the input field layout
                 View inputFieldView = dialog.getLayoutInflater().inflate(R.layout.input_field, null);
 
-                // Get the EditText and add it to the list
+                // Get the edit text and add it to the list
                 EditText newInput = inputFieldView.findViewById(R.id.input_field);
                 paramTextList.add(newInput);
 
@@ -209,12 +192,9 @@ public class functions_page extends Page
                 Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                 voiceButton.setTag(paramTextList.size() - 1);  // Set the tag
 
-                voiceButton.setOnClickListener(v2 ->
-                {
-                    displaySpeechRecognizer(newInput);
-                });
+                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput));
 
-                // Add the layout to the LinearLayout and the list
+                // Add the layout to the linear layout and the list
                 paramInputContainer.addView(inputFieldView);
                 paramViewList.add(inputFieldView);
 
@@ -222,14 +202,14 @@ public class functions_page extends Page
 
             remParameterButton.setOnClickListener(v1 ->
             {
-                // Remove the last view from the LinearLayout and the list
+                // Remove the last view from the linear layout and the list
                 if (!paramViewList.isEmpty())
                 {
                     View lastView = paramViewList.get(paramViewList.size() - 1);
                     paramInputContainer.removeView(lastView);
                     paramViewList.remove(lastView);
 
-                    // Also remove the EditText from the list
+                    // Also remove the edit text from the list
                     if (!paramTextList.isEmpty())
                     {
                         paramTextList.remove(paramTextList.size() - 1);
@@ -269,10 +249,7 @@ public class functions_page extends Page
                 dialog.dismiss();
             });
 
-            cancelButton.setOnClickListener(v1 ->
-            {
-                dialog.dismiss();
-            });
+            cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
             dialog.setOnDismissListener(v2 ->
             {
@@ -342,7 +319,7 @@ public class functions_page extends Page
                     // Inflate the input field layout
                     View inputFieldView = dialog.getLayoutInflater().inflate(R.layout.input_field, null);
 
-                    // Get the EditText and add it to the list
+                    // Get the edit text and add it to the list
                     EditText newArgument = inputFieldView.findViewById(R.id.input_field);
                     argumentTextList.add(newArgument);
 
@@ -353,26 +330,23 @@ public class functions_page extends Page
                     Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                     voiceButton.setTag(argumentTextList.size() - 1);  // Set the tag
 
-                    voiceButton.setOnClickListener(v2 ->
-                    {
-                        displaySpeechRecognizer(newArgument);
-                    });
+                    voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newArgument));
 
-                    // Add the layout to the LinearLayout and the list
+                    // Add the layout to the linear layout and the list
                     argumentInputContainer.addView(inputFieldView);
                     argumentViewList.add(inputFieldView);
                 });
 
                 remArgumentButton.setOnClickListener(v1 ->
                 {
-                    // Remove the last view from the LinearLayout and the list
+                    // Remove the last view from the linear layout and the list
                     if (!argumentTextList.isEmpty())
                     {
                         View lastView = argumentViewList.get(argumentViewList.size() - 1);
                         argumentInputContainer.removeView(lastView);
                         argumentViewList.remove(lastView);
 
-                        // Also remove the EditText from the list
+                        // Also remove the edit text from the list
                         if (!argumentTextList.isEmpty())
                         {
                             argumentTextList.remove(argumentTextList.size() - 1);
@@ -382,7 +356,7 @@ public class functions_page extends Page
 
                 applyButton.setOnClickListener(v1 ->
                 {
-                    // Get the text from the EditText
+                    // Get the text from the edit text
                     String text = selectedFunction + "(";
 
                     // Iterate over the views and add each parameter to the function definition
@@ -442,7 +416,7 @@ public class functions_page extends Page
         // Clear the table
         functionsDefTable.removeAllViews();
 
-        // Create a new LinearLayout for every three functions
+        // Create a new linear layout for every three functions
         LinearLayout linearLayout = null;
 
         int i = 0;
@@ -455,7 +429,7 @@ public class functions_page extends Page
                 functionsDefTable.addView(linearLayout);
             }
 
-            // Create a new TextView for the function
+            // Create a new text view for the function
             TextView textView = new TextView(activity.getActivity());
             textView.setText(functionName);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
@@ -470,17 +444,17 @@ public class functions_page extends Page
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             textView.setLayoutParams(params);
 
-            // Add an OnClickListener to the TextView
+            // Add an onclick to the text view
             textView.setClickable(true);
             textView.setOnClickListener(v ->
             {
-                // Deselect the previously selected TextView
+                // Deselect the previously selected text view
                 if (selectedTextView != null)
                 {
-                    selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));;
+                    selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
                 }
 
-                // Select the clicked TextView
+                // Select the clicked text view
                 selectedTextView = (TextView) v;
                 selectedTextView.setBackgroundColor(Color.LTGRAY);
             });
@@ -502,9 +476,9 @@ public class functions_page extends Page
         Pattern pattern = Pattern.compile("def\\s+(\\w+)\\s*\\(.*\\)\\s*:");
 
         int index = 0;
-        for (int i = 0; i < lines.length; i++)
+        for (String s : lines)
         {
-            String line = lines[i].trim();
+            String line = s.trim();
             if (line.startsWith("#")) // ignore comments
             {
                 index += line.length() + 1;
@@ -513,12 +487,10 @@ public class functions_page extends Page
 
             Matcher matcher = pattern.matcher(line);
 
-            if (matcher.find())
-            {
+            if (matcher.find()) {
                 String functionName = matcher.group(1);
 
-                if (!functionDefinitions.containsKey(functionName))
-                {
+                if (!functionDefinitions.containsKey(functionName)) {
                     functionDefinitions.put(functionName, index + line.indexOf(functionName));
                 }
             }
@@ -527,15 +499,5 @@ public class functions_page extends Page
         }
 
         return functionDefinitions;
-    }
-
-    // start the speech recognizer
-    private void displaySpeechRecognizer(EditText editText)
-    {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-
-        this.voiceEditText = editText;
-        activity.startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 }

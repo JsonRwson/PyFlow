@@ -10,15 +10,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
-        android:text="New Import"
+        android:textSize="17dp"
+        android:text="Else If"
         android:padding="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="Package"
+        android:text="Condition"
         android:paddingBottom="5dp"
         android:paddingLeft="15dp"/>
 
@@ -30,7 +30,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/imp_name"
+            android:id="@+id/elif_condition"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:minLines="1"
@@ -40,7 +40,7 @@
             android:background="@drawable/input_field_text_bg"/>
 
         <Button
-            android:id="@+id/imp_name_voice"
+            android:id="@+id/elif_condition_voice"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
@@ -55,14 +55,14 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/imp_apply"
+            android:id="@+id/elif_apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Apply"/>
 
         <Button
-            android:id="@+id/imp_cancel"
+            android:id="@+id/elif_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"

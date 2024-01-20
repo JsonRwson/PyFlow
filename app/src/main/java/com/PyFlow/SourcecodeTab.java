@@ -1,29 +1,30 @@
 package com.PyFlow;
-import static android.app.Activity.RESULT_OK;
-import static androidx.core.content.ContextCompat.getSystemService;
 
-import com.PyFlow.keyboard_pages.*;
+import static android.app.Activity.RESULT_OK;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.text.InputType;
 import android.text.Layout;
-
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +33,15 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.PyFlow.keyboard_pages.OOP_page;
+import com.PyFlow.keyboard_pages.exceptions_page;
+import com.PyFlow.keyboard_pages.functions_page;
+import com.PyFlow.keyboard_pages.imports_page;
+import com.PyFlow.keyboard_pages.loops_page;
+import com.PyFlow.keyboard_pages.operators_page;
+import com.PyFlow.keyboard_pages.selection_page;
+import com.PyFlow.keyboard_pages.variables_page;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,19 +49,10 @@ public class SourcecodeTab extends Fragment
 {
     private int mode = 0; // 3 modes, custom keyboard, default keyboard, no keyboards
     private CustomEditText sourceCode;
+    public EditText voiceEditText;
     private LinearLayout keyboardPanel;
     private Button[] pageNavButtons;
 
-    private imports_page page_import;
-    private variables_page page_variables;
-    private functions_page page_functions;
-    private loops_page page_loops;
-    private selection_page page_selection;
-    private operators_page page_operators;
-    private OOP_page page_OOP;
-    private exceptions_page page_exceptions;
-
-    private Page activePage;
     private static final int SPEECH_REQUEST_CODE = 0;
 
     public SourcecodeTab() {}
@@ -236,6 +237,8 @@ public class SourcecodeTab extends Fragment
         Button utilCopy = view.findViewById(R.id.util_copy);
         Button utilPaste = view.findViewById(R.id.util_paste);
         Button utilComment = view.findViewById(R.id.util_comment);
+        Button utilString = view.findViewById(R.id.util_string);
+
 
         utilTab.setOnClickListener(v ->
         {
@@ -254,7 +257,7 @@ public class SourcecodeTab extends Fragment
                 // Remove the extra newline from the start of the selected text
                 selectedText = selectedText.substring(1);
 
-                // Replace the selected text in the EditText
+                // Replace the selected text in the edit text
                 sourceCode.getText().replace(startSelection, endSelection, selectedText);
             }
             else
@@ -313,7 +316,72 @@ public class SourcecodeTab extends Fragment
 
         utilComment.setOnClickListener(v ->
         {
+            // Create a new dialog
+            Dialog dialog = new Dialog(getContext());
+            // Set the custom layout for the dialog
+            dialog.setContentView(R.layout.dialog_comment);
 
+            if(dialog.getWindow() != null)
+            {
+                dialog.getWindow().setDimAmount(0.6f);
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+
+            EditText commentContent = dialog.findViewById(R.id.comment_content);
+            Button stringContentVoice = dialog.findViewById(R.id.comment_content_voice);
+            Button applyButton = dialog.findViewById(R.id.comment_apply);
+            Button cancelButton = dialog.findViewById(R.id.comment_cancel);
+
+            stringContentVoice.setOnClickListener(v1 ->
+                    startVoiceInput(commentContent));
+
+            applyButton.setOnClickListener(v1 ->
+            {
+                String text = "# " + commentContent.getText().toString();
+                int start = sourceCode.getSelectionStart();
+                sourceCode.getText().insert(start, text);
+
+                dialog.dismiss();
+            });
+
+            cancelButton.setOnClickListener(v1 -> dialog.dismiss());
+
+            dialog.show();
+        });
+
+        utilString.setOnClickListener(v ->
+        {
+            // Create a new dialog
+            Dialog dialog = new Dialog(getContext());
+            // Set the custom layout for the dialog
+            dialog.setContentView(R.layout.dialog_string);
+
+            if(dialog.getWindow() != null)
+            {
+                dialog.getWindow().setDimAmount(0.6f);
+                dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+
+            EditText stringContent = dialog.findViewById(R.id.string_content);
+            Button stringContentVoice = dialog.findViewById(R.id.string_content_voice);
+            Button applyButton = dialog.findViewById(R.id.string_apply);
+            Button cancelButton = dialog.findViewById(R.id.string_cancel);
+
+            stringContentVoice.setOnClickListener(v1 -> startVoiceInput(stringContent));
+
+            applyButton.setOnClickListener(v1 ->
+            {
+                String text = "\"" + stringContent.getText().toString() + "\"";
+                int start = sourceCode.getSelectionStart();
+                sourceCode.getText().insert(start, text);
+
+                dialog.dismiss();
+            });
+
+            cancelButton.setOnClickListener(v1 ->
+                    dialog.dismiss());
+
+            dialog.show();
         });
 
         // Insert Symbol buttons onClicks ======================================================
@@ -331,7 +399,7 @@ public class SourcecodeTab extends Fragment
                 // Set an OnClickListener for the button
                 button.setOnClickListener(v ->
                 {
-                    // Get the current cursor position in the EditText
+                    // Get the current cursor position in the edit text
                     int cursorPosition = sourceCode.getSelectionStart();
 
                     // Get the button text
@@ -354,7 +422,7 @@ public class SourcecodeTab extends Fragment
         Button OOPPageButton = view.findViewById(R.id.key_OOP);
         Button exceptionsPageButton = view.findViewById(R.id.key_except);
 
-        // Find the ViewPager
+        // Find the view pager
         KeyboardViewPager viewPager = view.findViewById(R.id.keyboard_ViewPager);
 
         // Create a list of pages
@@ -395,28 +463,28 @@ public class SourcecodeTab extends Fragment
                 switch (position)
                 {
                     case 0:
-                        page_import = new imports_page(page, SourcecodeTab.this, sourceCode);
+                        new imports_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 1:
-                        page_variables = new variables_page(page, SourcecodeTab.this, sourceCode);
+                        new variables_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 2:
-                        page_functions = new functions_page(page, SourcecodeTab.this, sourceCode);
+                        new functions_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 3:
-                        page_loops = new loops_page(page, SourcecodeTab.this, sourceCode);
+                        new loops_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 4:
-                        page_selection = new selection_page(page, SourcecodeTab.this, sourceCode);
+                        new selection_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 5:
-                        page_operators = new operators_page(page, SourcecodeTab.this, sourceCode);
+                        new operators_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 6:
-                        page_OOP = new OOP_page(page, SourcecodeTab.this, sourceCode);
+                        new OOP_page(page, SourcecodeTab.this, sourceCode);
                         break;
                     case 7:
-                        page_exceptions = new exceptions_page(page, SourcecodeTab.this, sourceCode);
+                        new exceptions_page(page, SourcecodeTab.this, sourceCode);
                         break;
                 }
                 return page;
@@ -429,12 +497,11 @@ public class SourcecodeTab extends Fragment
             }
         };
 
-        // Set the PagerAdapter to the ViewPager
+        // Set the pager adapter  to the view pager
         viewPager.setAdapter(keyboardPagerAdapter);
 
         // The keyboard opens on the import page first
         highlightButton(importPageButton);
-        this.activePage = page_import;
 
         // Keyboard panel navigation onclick ==========================================================================
         importPageButton.setOnClickListener(view18 ->
@@ -442,7 +509,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(0);
             resetButtonBackgrounds();
             highlightButton(importPageButton);
-            this.activePage = page_import;
         });
 
         variablesPageButton.setOnClickListener(view17 ->
@@ -450,7 +516,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(1);
             resetButtonBackgrounds();
             highlightButton(variablesPageButton);
-            this.activePage = page_variables;
         });
 
         functionsPageButton.setOnClickListener(view16 ->
@@ -458,7 +523,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(2);
             resetButtonBackgrounds();
             highlightButton(functionsPageButton);
-            this.activePage = page_functions;
         });
 
         loopPageButton.setOnClickListener(view15 ->
@@ -466,7 +530,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(3);
             resetButtonBackgrounds();
             highlightButton(loopPageButton);
-            this.activePage = page_loops;
         });
 
         selectionPageButton.setOnClickListener(view14 ->
@@ -474,7 +537,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(4);
             resetButtonBackgrounds();
             highlightButton(selectionPageButton);
-            this.activePage = page_selection;
         });
 
         operPageButton.setOnClickListener(view13 ->
@@ -482,7 +544,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(5);
             resetButtonBackgrounds();
             highlightButton(operPageButton);
-            this.activePage = page_operators;
         });
 
         OOPPageButton.setOnClickListener(view13 ->
@@ -490,7 +551,6 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(6);
             resetButtonBackgrounds();
             highlightButton(OOPPageButton);
-            this.activePage = page_OOP;
         });
 
         exceptionsPageButton.setOnClickListener(view12 ->
@@ -498,29 +558,42 @@ public class SourcecodeTab extends Fragment
             viewPager.setCurrentItem(7);
             resetButtonBackgrounds();
             highlightButton(exceptionsPageButton);
-            this.activePage = page_exceptions;
         });
 
         return view;
+    }
+
+    // Voice related methods =================================================
+    public void startVoiceInput(EditText editText)
+    {
+        this.voiceEditText= editText;
+        displaySpeechRecognizer();
+    }
+
+    private void displaySpeechRecognizer()
+    {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK)
+        {
             List<String> results = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
             String spokenText = results.get(0);
 
-            if(activePage != null && activePage.voiceEditText != null)
+            if(voiceEditText != null)
             {
-                activePage.setEditText(spokenText);
+                voiceEditText.setText(spokenText);
             }
         }
     }
 
-
-    // Button styling methods =============================================================================================
+    // Button related methods =============================================================================================
     private void resetButtonBackgrounds()
     {
         for (Button button : pageNavButtons)
@@ -533,5 +606,39 @@ public class SourcecodeTab extends Fragment
     private void highlightButton(Button button)
     {
         button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.keyboard_page_button_highlighted, null));
+    }
+
+    public void setOnclickForTableButtons(TableLayout table, String additionalText)
+    {
+        for (int i = 0; i < table.getChildCount(); i++)
+        {
+            View row = table.getChildAt(i);
+            if (row instanceof TableRow)
+            {
+                TableRow tableRow = (TableRow) row;
+                for (int j = 0; j < tableRow.getChildCount(); j++)
+                {
+                    View child = tableRow.getChildAt(j);
+                    if (child instanceof Button)
+                    {
+                        Button button = (Button) child;
+                        button.setOnClickListener(v ->
+                        {
+                            // Get the text from the Button
+                            String text = button.getText().toString();
+
+                            if(additionalText != null)
+                            {
+                                text = text + additionalText;
+                            }
+
+                            // Insert the text at the current cursor position
+                            int start = sourceCode.getSelectionStart();
+                            sourceCode.getText().insert(start, text);
+                        });
+                    }
+                }
+            }
+        }
     }
 }
