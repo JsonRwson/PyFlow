@@ -35,6 +35,7 @@ public class functions_page
 
     private final TableLayout functionsDefTable;
     private final TableLayout functionCallsTable;
+    private final TableLayout functionKeysTable;
 
     private final CustomEditText sourceCode;
     private TextView selectedTextView;
@@ -59,11 +60,13 @@ public class functions_page
         this.originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
 
         this.functionsDefTable = view.findViewById(R.id.func_def_table);
-        this.functionCallsTable = view.findViewById(R.id.func_keys_table);
+        this.functionCallsTable = view.findViewById(R.id.func_calls_table);
+        this.functionKeysTable = view.findViewById(R.id.func_keys_table);
 
         Button newFunctionButton = view.findViewById(R.id.new_func);
         Button refreshDefinitionsButton = view.findViewById(R.id.func_def_refresh);
         Button collapseDefinitionsButton = view.findViewById(R.id.func_def_collapse);
+        Button collapseCallsButton = view.findViewById(R.id.func_calls_collapse);
         Button collapseKeysButton = view.findViewById(R.id.func_keys_collapse);
         Button gotoFuncButton = view.findViewById(R.id.func_goto);
         Button callFuncButton = view.findViewById(R.id.func_call);
@@ -98,6 +101,8 @@ public class functions_page
             }
         }
 
+        activity.setOnclickForTableButtons(functionKeysTable, null, null);
+
         // Use a one element array because lambda variables should be final
         // Toggle collapse the table for definitions
         final boolean[] isDefTableVisible = {true};
@@ -121,20 +126,41 @@ public class functions_page
             isDefTableVisible[0] = !isDefTableVisible[0];
         });
 
+        final boolean[] isCallsTableVisible = {true};
+        collapseCallsButton.setOnClickListener(v ->
+        {
+            if (isCallsTableVisible[0])
+            {
+                // Hide the table layout
+                functionCallsTable.setVisibility(View.GONE);
+                // Switch to an up chevron icon
+                collapseCallsButton.setBackgroundResource(R.drawable.up_chevron_icon);
+            }
+            else
+            {
+                // Show the table layout
+                functionCallsTable.setVisibility(View.VISIBLE);
+                // Switch to a down chevron icon
+                collapseCallsButton.setBackgroundResource(R.drawable.down_chevron_icon);
+            }
+            // Toggle the state
+            isCallsTableVisible[0] = !isCallsTableVisible[0];
+        });
+
         final boolean[] isKeyTableVisible = {true};
         collapseKeysButton.setOnClickListener(v ->
         {
             if (isKeyTableVisible[0])
             {
                 // Hide the table layout
-                functionCallsTable.setVisibility(View.GONE);
+                functionKeysTable.setVisibility(View.GONE);
                 // Switch to an up chevron icon
                 collapseKeysButton.setBackgroundResource(R.drawable.up_chevron_icon);
             }
             else
             {
                 // Show the table layout
-                functionCallsTable.setVisibility(View.VISIBLE);
+                functionKeysTable.setVisibility(View.VISIBLE);
                 // Switch to a down chevron icon
                 collapseKeysButton.setBackgroundResource(R.drawable.down_chevron_icon);
             }
@@ -223,7 +249,7 @@ public class functions_page
                 String text = "def " + funcName.getText().toString() + "(";
 
                 // Iterate over the views and add each parameter to the function definition
-                for (int i = 0; i < paramTextList.size(); i++)
+                for(int i = 0; i < paramTextList.size(); i++)
                 {
                     // Get the parameter name
                     String paramName = paramTextList.get(i).getText().toString();
@@ -262,10 +288,10 @@ public class functions_page
 
         gotoFuncButton.setOnClickListener(v1 ->
         {
-            if (selectedTextView != null)
+            if(selectedTextView != null)
             {
                 selectedFunction = selectedTextView.getText().toString();
-                if (functionDefinitions.containsKey(selectedFunction))
+                if(functionDefinitions.containsKey(selectedFunction))
                 {
                     int var_pos = functionDefinitions.get(selectedFunction);
                     sourceCode.setSelection(var_pos);
@@ -275,7 +301,7 @@ public class functions_page
 
         pasteFuncButton.setOnClickListener(v ->
         {
-            if (selectedTextView != null)
+            if(selectedTextView != null)
             {
                 selectedFunction = selectedTextView.getText().toString();
                 int start = sourceCode.getSelectionStart();
@@ -487,10 +513,12 @@ public class functions_page
 
             Matcher matcher = pattern.matcher(line);
 
-            if (matcher.find()) {
+            if (matcher.find())
+            {
                 String functionName = matcher.group(1);
 
-                if (!functionDefinitions.containsKey(functionName)) {
+                if (!functionDefinitions.containsKey(functionName))
+                {
                     functionDefinitions.put(functionName, index + line.indexOf(functionName));
                 }
             }

@@ -1,22 +1,17 @@
 package com.PyFlow;
 
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.view.Menu;
 
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager.widget.PagerAdapter;
 
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity
 {
-    private DrawerLayout drawerLayout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,27 +20,6 @@ public class MainActivity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(item ->
-        {
-            int id = item.getItemId();
-            if (id == R.id.nav_item1)
-            {
-
-            }
-            else if (id == R.id.nav_item2)
-            {
-
-            }
-            drawerLayout.closeDrawers();
-            return true;
-        });
 
         CustomViewPager viewPager = findViewById(R.id.view_pager);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
@@ -60,15 +34,11 @@ public class MainActivity extends AppCompatActivity
         viewPager.setPagingEnabled(false);
     }
 
-    public void onBackPressed()
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
     {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START))
-        {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else
-        {
-            super.onBackPressed();
-        }
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
     }
+
 }

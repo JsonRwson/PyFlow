@@ -13,47 +13,82 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 {
+    // List for tracking the number of lines needed, string to hold the actual numbers for the view
     private TextView lineNumbers;
     private String lineNumbersString = "";
     private final List<Integer> lineNumbersList = new ArrayList<>();
+
     private final Set<Integer> modifiedLines = new HashSet<>();
     private int previousLineCount = 0;
     private int currentLineCount = 0;
+
+    // Stacks for states to go back to, or redo
+    private final Stack<undoRedoState> undoStack = new Stack<>();
+    private final Stack<undoRedoState> redoStack = new Stack<>();
+    // Flag to track if a change is the result of an undo or redo
+    // Dont want to push these changes to the stack
+    private boolean isUndoRedo = false;
+
+    // A static class to represent edited states for undo and redo operations
+    // Also tracks the cursor position to avoid cursor jumps when undo/redo
+    private static class undoRedoState
+    {
+        private final String text;
+        private final int start;
+        private final int end;
+        private final int cursor;
+
+        undoRedoState(String text, int start, int end, int cursor)
+        {
+            this.text = text;
+            this.start = start;
+            this.end = end;
+            this.cursor = cursor;
+        }
+    }
 
     public CustomEditText(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init();
 
+        // Push empty state to undo stack first
+        undoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
+
         // Regex patterns for different python elements to highlight
         final String[] KEYWORDS = {"and", "as", "assert", "break", "class", "continue", "def", "del", "elif", "else", "except",
                 "False", "finally", "for", "from", "global", "if", "import", "in", "is", "lambda", "None", "nonlocal", "not", "or",
                 "pass", "raise", "return", "True", "try", "while", "with", "yield", "async", "await"};
 
-        // Match any words in the keywords array
-        final Pattern PATTERN_KEYWORDS = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+        // Match any words in the keywords array separate from other characters
+        final Pattern keywords_pattern = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
 
         // Match zero or more characters after a hash, not include newlines
-        final Pattern PATTERN_COMMENTS = Pattern.compile("#.*");
+        final Pattern comments_pattern = Pattern.compile("#.*");
 
         // Match zero or more characters between double, triple and single quotes
-        final Pattern PATTERN_STRINGS = Pattern.compile("\".*?\"|'.*?'|\"\"\".*?\"\"\"|'''.*?'''");
+        final Pattern strings_pattern = Pattern.compile("\".*?\"|'.*?'|\"\"\".*?\"\"\"|'''.*?'''");
 
-        // Match only whole words followed open and close brackets
-        final Pattern PATTERN_FUNCTIONS = Pattern.compile("\\b\\w+(?=\\s*\\()");
+        // Match words followed by open and close brackets separate from other characters
+        final Pattern functions_pattern = Pattern.compile("\\b\\w+(?=\\s*\\()");
+
+        // Match only one or more digits separate from other characters
+        final Pattern numbers_pattern = Pattern.compile("\\b\\d+\\b");
 
         // Colours for highlighting different elements
-        final int COLOR_KEYWORDS = Color.parseColor("#FFC66D");
-        final int COLOR_COMMENTS = Color.parseColor("#A7A8A8");
-        final int COLOR_STRINGS = Color.parseColor("#A5C261");
-        final int COLOR_FUNCTIONS = Color.parseColor("#9C93F5");
+        final int keywords_colour = Color.parseColor("#FFC66D");
+        final int comments_colour = Color.parseColor("#A7A8A8");
+        final int strings_colour = Color.parseColor("#A5C261");
+        final int functions_colour = Color.parseColor("#9C93F5");
+        final int numbers_colour = Color.parseColor("#93b8ff");
 
-        // Add a TextWatcher to update the line numbers
+        // Add a text watcher to update the line numbers
         addTextChangedListener(new TextWatcher()
         {
             // Syntax highlighting =========================================================
@@ -63,15 +98,26 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
                 previousLineCount = getLineCount();
             }
 
+            // Hash set used to store modified lines
+            // Unique elements, so a line is not added if modified multiple times
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count)
             {
+                // Calculate the start and end of modifications per line basis
                 int startLine = getLayout().getLineForOffset(start);
                 int endLine = getLayout().getLineForOffset(start + count);
 
+                // Add the changed lines to the set
                 for (int i = startLine; i <= endLine; i++)
                 {
                     modifiedLines.add(i);
+                }
+
+                // If the text change isnt an undo or redo operation
+                // Clear the redo stack to prevent re-doing after new modifications are made
+                if(!isUndoRedo)
+                {
+                    redoStack.clear();
                 }
             }
 
@@ -79,11 +125,20 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
             public void afterTextChanged(Editable s)
             {
                 currentLineCount = getLineCount();
+
+                // If the line count is different, update line numbers and push changes to undo
                 if(previousLineCount != currentLineCount)
                 {
                     updateLineNumbers(currentLineCount);
+
+                    if(!isUndoRedo)
+                    {
+                        redoStack.clear();
+                        undoStack.push(new undoRedoState(s.toString(), 0, s.length(), getSelectionStart()));
+                    }
                 }
 
+                // Iterate over the modified lines and apply syntax highlighting to them
                 for (int line : modifiedLines)
                 {
                     int start = getLayout().getLineStart(line);
@@ -98,11 +153,14 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
                     }
 
                     // Apply syntax highlighting to this line
-                    highlightSyntax(s, lineText, start, PATTERN_KEYWORDS, COLOR_KEYWORDS);
-                    highlightSyntax(s, lineText, start, PATTERN_FUNCTIONS, COLOR_FUNCTIONS);
-                    highlightSyntax(s, lineText, start, PATTERN_STRINGS, COLOR_STRINGS);
-                    highlightSyntax(s, lineText, start, PATTERN_COMMENTS, COLOR_COMMENTS);
+                    highlightSyntax(s, lineText, start, numbers_pattern, numbers_colour);
+                    highlightSyntax(s, lineText, start, keywords_pattern, keywords_colour);
+                    highlightSyntax(s, lineText, start, functions_pattern, functions_colour);
+                    highlightSyntax(s, lineText, start, strings_pattern, strings_colour);
+                    highlightSyntax(s, lineText, start, comments_pattern, comments_colour);
                 }
+
+                // On applying syntax highlighting to the modified lines, clear for the next set of changes
                 modifiedLines.clear();
             }
 
@@ -121,7 +179,46 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 
     private void init()
     {
-        this.setShowSoftInputOnFocus(false); // Prevents keyboard from popping up
+        this.setShowSoftInputOnFocus(false); // Prevents keyboard from popping up initially
+    }
+
+    // Both undo and redo methods set the undo/redo flag to true while updating text
+    // Ensures these changes are not pushed to the stack
+    public void undo()
+    {
+        // If there are changes to revert back to
+        if (!undoStack.empty())
+        {
+            isUndoRedo = true;
+
+            // Pop the state change and set it as the text
+            // Before setting text, create a new edit object to be pushed to the redo stack
+            // Ensures after undo, you can revert back
+            undoRedoState edit = undoStack.pop();
+            redoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
+            setText(edit.text);
+            setSelection(edit.cursor);
+
+            isUndoRedo = false;
+        }
+    }
+
+    public void redo()
+    {
+        // If there are changes to re perform
+        if(!redoStack.empty())
+        {
+            isUndoRedo = true;
+
+            // Similar logic as undo, pop the state change, push the current state to the undo stack
+            // Then set the text to the redo state
+            undoRedoState edit = redoStack.pop();
+            undoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
+            setText(edit.text);
+            setSelection(edit.cursor);
+
+            isUndoRedo = false;
+        }
     }
 
     public void allowSoftInput(boolean allow)
@@ -135,16 +232,19 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         updateLineNumbers(1);
     }
 
+    // Called every time the line count changes
     public void updateLineNumbers(int lineCount)
     {
-        if (lineNumbers != null)
+        if(lineNumbers != null)
         {
             // If the line count has increased, add the new line numbers
-            for (int i = lineNumbersList.size() + 1; i <= lineCount; i++)
+            for(int i = lineNumbersList.size() + 1; i <= lineCount; i++)
             {
                 lineNumbersList.add(i);
 
-                if (i == 1)
+                // If this is the first line in the editor
+                // Don't need to add a preceding newline to the line numbers view
+                if(i == 1)
                 {
                     lineNumbersString += i;
                 }
@@ -155,7 +255,9 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
             }
 
             // If the line count has decreased, remove the extra line numbers
-            while (lineNumbersList.size() > lineCount) {
+            // Continually remove numbers from the string and list until the counts are equal
+            while(lineNumbersList.size() > lineCount)
+            {
                 lineNumbersList.remove(lineNumbersList.size() - 1);
                 lineNumbersString = lineNumbersString.substring(0, lineNumbersString.lastIndexOf("\n"));
             }

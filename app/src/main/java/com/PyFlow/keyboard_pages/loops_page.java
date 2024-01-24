@@ -28,7 +28,7 @@ public class loops_page
         Button newForButton = view.findViewById(R.id.new_for);
         Button newWhileButton = view.findViewById(R.id.new_while);
 
-        activity.setOnclickForTableButtons(loopKeysTable, null);
+        activity.setOnclickForTableButtons(loopKeysTable, null, null);
 
         newForButton.setOnClickListener(v ->
         {

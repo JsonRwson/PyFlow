@@ -13,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.text.InputType;
 import android.text.Layout;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -24,7 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,10 +49,13 @@ import java.util.List;
 public class SourcecodeTab extends Fragment
 {
     private int mode = 0; // 3 modes, custom keyboard, default keyboard, no keyboards
+    private String currentFilePath = "untitled.py";
+
     private CustomEditText sourceCode;
     public EditText voiceEditText;
     private LinearLayout keyboardPanel;
     private Button[] pageNavButtons;
+    private Toolbar toolbar;
 
     private static final int SPEECH_REQUEST_CODE = 0;
 
@@ -78,7 +82,40 @@ public class SourcecodeTab extends Fragment
         LinearLayout keyboardNavLayout = view.findViewById(R.id.keyboardPanelButtons);
         this.sourceCode = view.findViewById(R.id.sourceCode);
         this.keyboardPanel = view.findViewById(R.id.keyboardPanel);
+        this.toolbar = getActivity().findViewById(R.id.toolbar);
+        this.toolbar.setTitle(currentFilePath);
 
+        // Toolbar operations, undo, redo, save, save as, load from file
+        toolbar.setOnMenuItemClickListener(item ->
+        {
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_undo)
+            {
+                sourceCode.undo();
+                return true;
+            }
+            else if (itemId == R.id.action_redo)
+            {
+                sourceCode.redo();
+                return true;
+            }
+            else if (itemId == R.id.action_save)
+            {
+                return true;
+            }
+            else if (itemId == R.id.action_save_as)
+            {
+                return true;
+            }
+            else if (itemId == R.id.action_load_from)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        });
 
         // Fetch keyboard page buttons, resize them and add then to an array
         int keyboardButtonWidth = 150;
@@ -608,7 +645,7 @@ public class SourcecodeTab extends Fragment
         button.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.keyboard_page_button_highlighted, null));
     }
 
-    public void setOnclickForTableButtons(TableLayout table, String additionalText)
+    public void setOnclickForTableButtons(TableLayout table, String additionalText, String prefixText)
     {
         for (int i = 0; i < table.getChildCount(); i++)
         {
@@ -630,6 +667,11 @@ public class SourcecodeTab extends Fragment
                             if(additionalText != null)
                             {
                                 text = text + additionalText;
+                            }
+
+                            if(prefixText != null)
+                            {
+                                text = prefixText + text;
                             }
 
                             // Insert the text at the current cursor position

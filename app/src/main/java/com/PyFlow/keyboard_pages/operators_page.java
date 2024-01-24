@@ -24,7 +24,7 @@ public class operators_page
         TableLayout numbersTable = view.findViewById(R.id.num_table);
         TableLayout operatorsTable = view.findViewById(R.id.op_table);
 
-        activity.setOnclickForTableButtons(numbersTable, null);
-        activity.setOnclickForTableButtons(operatorsTable, null);
+        activity.setOnclickForTableButtons(numbersTable, null, null);
+        activity.setOnclickForTableButtons(operatorsTable, null, null);
     }
 }

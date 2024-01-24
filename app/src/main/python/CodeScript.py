@@ -1,11 +1,12 @@
 import sys
 from os.path import dirname, join
 from com.chaquo.python import Python
+import threading
 import builtins
 
-# function called by java app when run button is clicked
-def main(CodeInputData, inputLines):
+result = [None]
 
+def execute_code(CodeInputData, inputLines):
     # Get the directory for application-specific files to be stored in
     file_dir = str(Python.getPlatform().getApplication().getFilesDir())
 
@@ -59,8 +60,11 @@ def main(CodeInputData, inputLines):
 
     # catch exceptions and replace the output with the caught exception message
     except Exception as error:
-        sys.stdout = original_stdout
-        output = error
+        output = str(error)
+
+        # Write the error message to the output file
+        with open(filename, 'w') as f:
+            f.write(output)
 
     finally:
         # close the output stream
@@ -72,4 +76,21 @@ def main(CodeInputData, inputLines):
         # read the result of running the code from the file it outputted to
         output = open(filename, 'r').read()
 
-    return str(output) # return code output
+    result[0] = str(output) # return code output
+
+# function called by java app when run button is clicked
+def main(CodeInputData, inputLines):
+    # Create a thread to run the code
+    code_thread = threading.Thread(target=execute_code, args=(CodeInputData, inputLines))
+
+    # Start the thread
+    code_thread.start()
+
+    # Wait for 5 seconds
+    code_thread.join(timeout=5)
+
+    # If the thread is still alive after 5 seconds, it's probably stuck in an infinite loop
+    if code_thread.is_alive():
+        return "Code execution timed out"
+    else:
+        return result[0]

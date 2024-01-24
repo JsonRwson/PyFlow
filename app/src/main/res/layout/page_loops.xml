@@ -78,6 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="Keys"
+                    android:textColor="@color/black"
                     android:textSize="15dp" />
 
             </LinearLayout>

@@ -60,7 +60,7 @@ public class variables_page
         Button updateVarButton = view.findViewById(R.id.var_assign);
         Button pasteVarButton = view.findViewById(R.id.var_paste);
 
-        activity.setOnclickForTableButtons(variablesKeyTable, null);
+        activity.setOnclickForTableButtons(variablesKeyTable, null, null);
 
         newVariableButton.setOnClickListener(v ->
         {

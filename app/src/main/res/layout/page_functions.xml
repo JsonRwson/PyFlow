@@ -171,10 +171,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:text="Common Calls"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:textColor="@color/black"/>
 
                 <Button
-                    android:id="@+id/func_keys_collapse"
+                    android:id="@+id/func_calls_collapse"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_margin="5dp"
@@ -190,7 +191,7 @@
             </LinearLayout>
 
             <TableLayout
-                android:id="@+id/func_keys_table"
+                android:id="@+id/func_calls_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -447,6 +448,263 @@
                         android:singleLine="true"
                         android:padding="0dp"/>
                     <Button android:text="enum"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+            </TableLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Keys"
+                    android:textSize="15dp"
+                    android:textColor="@color/black"/>
+
+                <Button
+                    android:id="@+id/func_keys_collapse"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="5dp"
+                    android:background="@drawable/down_chevron_icon"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <TableLayout
+                android:id="@+id/func_keys_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:showDividers="middle"
+                android:stretchColumns="*">
+
+                <TableRow>
+                    <Button android:text="def"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="return"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="None"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="True"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="False"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="self"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="async"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="await"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="pass"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="raise"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="!"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="="
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="&quot;"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="set"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="\@"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text="&lt;"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=","
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="\\"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="("
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=")"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                </TableRow>
+
+                <TableRow>
+                    <Button android:text=">"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text=":"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="/"
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="."
+                        android:layout_height="35dp"
+                        android:textColor="@color/black"
+                        android:background="@drawable/table_button_background"
+                        app:backgroundTint="@null"
+                        android:layout_weight="1"
+                        android:singleLine="true"
+                        android:padding="0dp"/>
+                    <Button android:text="*"
                         android:layout_height="35dp"
                         android:textColor="@color/black"
                         android:background="@drawable/table_button_background"
