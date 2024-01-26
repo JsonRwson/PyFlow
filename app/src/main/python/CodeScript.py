@@ -87,10 +87,10 @@ def main(CodeInputData, inputLines):
     code_thread.start()
 
     # Wait for 5 seconds
-    code_thread.join(timeout=5)
+    code_thread.join(timeout=10)
 
     # If the thread is still alive after 5 seconds, it's probably stuck in an infinite loop
     if code_thread.is_alive():
-        return "Code execution timed out"
+        return "Code execution timed out\nCheck for infinite conditions"
     else:
         return result[0]

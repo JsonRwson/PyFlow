@@ -33,7 +33,8 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
     private final Stack<undoRedoState> redoStack = new Stack<>();
     // Flag to track if a change is the result of an undo or redo
     // Dont want to push these changes to the stack
-    private boolean isUndoRedo = false;
+    private boolean isAppOperation = false;
+    private int stackLimit = 100;
 
     // A static class to represent edited states for undo and redo operations
     // Also tracks the cursor position to avoid cursor jumps when undo/redo
@@ -115,7 +116,7 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 
                 // If the text change isnt an undo or redo operation
                 // Clear the redo stack to prevent re-doing after new modifications are made
-                if(!isUndoRedo)
+                if(!isAppOperation)
                 {
                     redoStack.clear();
                 }
@@ -131,9 +132,16 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
                 {
                     updateLineNumbers(currentLineCount);
 
-                    if(!isUndoRedo)
+                    if(!isAppOperation)
                     {
                         redoStack.clear();
+
+                        // Maintain limited stack size
+                        if(undoStack.size() >= stackLimit)
+                        {
+                            undoStack.remove(0);
+                        }
+
                         undoStack.push(new undoRedoState(s.toString(), 0, s.length(), getSelectionStart()));
                     }
                 }
@@ -189,17 +197,24 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         // If there are changes to revert back to
         if (!undoStack.empty())
         {
-            isUndoRedo = true;
+            isAppOperation = true;
 
             // Pop the state change and set it as the text
             // Before setting text, create a new edit object to be pushed to the redo stack
             // Ensures after undo, you can revert back
             undoRedoState edit = undoStack.pop();
+
+            // Maintain stack limit
+            if(redoStack.size() >= stackLimit)
+            {
+                redoStack.remove(0);
+            }
+
             redoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
             setText(edit.text);
             setSelection(edit.cursor);
 
-            isUndoRedo = false;
+            isAppOperation = false;
         }
     }
 
@@ -208,7 +223,7 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         // If there are changes to re perform
         if(!redoStack.empty())
         {
-            isUndoRedo = true;
+            isAppOperation = true;
 
             // Similar logic as undo, pop the state change, push the current state to the undo stack
             // Then set the text to the redo state
@@ -217,7 +232,7 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
             setText(edit.text);
             setSelection(edit.cursor);
 
-            isUndoRedo = false;
+            isAppOperation = false;
         }
     }
 

@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +44,6 @@ public class ExecuteCodeTab extends Fragment
     private List<View> inputViewList;
     private LinearLayout inputContainer;
 
-    private Thread pythonExecutionThread = null;
     private boolean isCodeExecuting = false;
 
     public ExecuteCodeTab()
@@ -128,91 +129,91 @@ public class ExecuteCodeTab extends Fragment
             }
         });
 
+        ResultReceiver receiver = new ResultReceiver(new Handler())
+        {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData)
+            {
+                super.onReceiveResult(resultCode, resultData);
+                String result = resultData.getString("result");
+
+                // Split the output into lines
+                String[] lines = result.split("\\r?\\n");
+
+                // Set a limit for the number of lines
+                int maxLines = 5000;  // Change this to your desired limit
+                int currentLines = lines.length;
+
+                // Check if the output exceeds the limit
+                if (currentLines > maxLines)
+                {
+                    // If it does, take only the first maxLines lines and add a message about the output being shortened
+                    result = String.join("\n", Arrays.copyOfRange(lines, 0, maxLines));
+
+                    getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Showing only " + maxLines + " of " + currentLines + " lines", Toast.LENGTH_SHORT).show());
+                }
+
+                // set code output widget to result of executing python code
+                String finalOutput = result;
+                codeOutputText.setText(finalOutput);
+            }
+        };
+
 
         // Run code button listener to fetch code, inputs and execute
         runCodeButton.setOnClickListener(view1 ->
         {
-            // If a thread is already running, interrupt it
-            if (pythonExecutionThread != null && pythonExecutionThread.isAlive())
-            {
-                pythonExecutionThread.interrupt();
-            }
             if(!isCodeExecuting)
             {
-                pythonExecutionThread = new Thread(() ->
+                try
                 {
-                    try
+                    isCodeExecuting = true;
+
+                    getActivity().runOnUiThread(() -> codeOutputText.setText("Executing..."));
+
+                    // get python instance and script to run user code in
+                    Python PyInstance = Python.getInstance();
+                    PyObject pyScriptObject = PyInstance.getModule("CodeScript");
+
+                    // Get input data from widgets
+                    List<String> inputLines = new ArrayList<>();
+                    for (View inputFieldView : inputViewList)
                     {
-                        PyObject pyObj = null;
-                        PyObject pyScriptObject = null;
-                        isCodeExecuting = true;
-
-                        getActivity().runOnUiThread(() -> codeOutputText.setText("Executing..."));
-
-                        // get python instance and script to run user code in
-                        Python PyInstance = Python.getInstance();
-                        pyScriptObject = PyInstance.getModule("CodeScript");
-
-                        // Get input data from widgets
-                        List<String> inputLines = new ArrayList<>();
-                        for (View inputFieldView : inputViewList)
-                        {
-                            EditText inputField = inputFieldView.findViewById(R.id.input_field);
-                            inputLines.add(inputField.getText().toString());
-                        }
-
-                        // call main function in python script, pass in user code and input data
-                        pyObj = pyScriptObject.callAttr("main", codeInputText.getText().toString(), inputLines.toArray(new String[0]));
-
-                        // Get the output as a string
-                        String output = pyObj.toString();
-
-                        // Split the output into lines
-                        String[] lines = output.split("\\r?\\n");
-
-                        // Set a limit for the number of lines
-                        int maxLines = 5000;  // Change this to your desired limit
-                        int currentLines = lines.length;
-
-                        // Check if the output exceeds the limit
-                        if (currentLines > maxLines)
-                        {
-                            // If it does, take only the first maxLines lines and add a message about the output being shortened
-                            output = String.join("\n", Arrays.copyOfRange(lines, 0, maxLines));
-
-                            getActivity().runOnUiThread(() -> Toast.makeText(getActivity(), "Showing only " + maxLines + " of " + currentLines + " lines", Toast.LENGTH_SHORT).show());
-                        }
-
-                        // set code output widget to result of executing python code
-                        String finalOutput = output;
-                        getActivity().runOnUiThread(() -> codeOutputText.setText(finalOutput));
+                        EditText inputField = inputFieldView.findViewById(R.id.input_field);
+                        inputLines.add(inputField.getText().toString());
                     }
-                    catch (Exception e)
-                    {
-                        Log.e("Py Code Exec Error", "Error: " + e.getMessage());
-                    }
-                    finally
-                    {
-                        isCodeExecuting = false;
-                        PyObject pyObj = null;
-                        PyObject pyScriptObject = null;
-                    }
-                });
 
-                pythonExecutionThread.start();
+                    // Create an Intent for the service
+                    Intent intent = new Intent(getActivity(), PythonService.class);
+                    intent.putExtra(PythonService.codeIdentifier, codeInputText.getText().toString());
+                    intent.putExtra(PythonService.inputIdentifier, inputLines.toArray(new String[0]));
+                    intent.putExtra(PythonService.resultReceiver, receiver);
+
+                    getActivity().startService(intent);
+                }
+                catch (Exception e)
+                {
+                    Log.e("Py Code Exec Error", "Error: " + e.getMessage());
+                }
+                finally
+                {
+                    isCodeExecuting = false;
+                }
             }
         });
 
-        stopCodeButton.setOnClickListener(view1 ->
+        stopCodeButton.setOnClickListener(v ->
         {
-            if (pythonExecutionThread != null && pythonExecutionThread.isAlive())
-            {
-                pythonExecutionThread.interrupt();
-                isCodeExecuting = false;
-                codeOutputText.setText("Execution Stopped");
-            }
-        });
+            // Create an Intent for the service
+            Intent intent = new Intent(getActivity(), PythonService.class);
 
+            // Stop the service
+            getActivity().stopService(intent);
+
+            codeOutputText.setText("Execution Halted");
+
+            isCodeExecuting = false;
+        });
 
         copyOutputButton.setOnClickListener(view1 ->
         {
