@@ -17,7 +17,7 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
+public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditText
 {
     // List for tracking the number of lines needed, string to hold the actual numbers for the view
     private TextView lineNumbers;
@@ -54,7 +54,7 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
         }
     }
 
-    public CustomEditText(Context context, AttributeSet attrs)
+    public SourcecodeEditor(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         init();
@@ -234,6 +234,14 @@ public class CustomEditText extends androidx.appcompat.widget.AppCompatEditText
 
             isAppOperation = false;
         }
+    }
+
+    public void clearStacks()
+    {
+        redoStack.clear();
+        undoStack.clear();
+
+        undoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
     }
 
     public void allowSoftInput(boolean allow)

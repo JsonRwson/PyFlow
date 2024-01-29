@@ -11,15 +11,15 @@ import android.widget.TableRow;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 public class exceptions_page
 {
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
 
-    public exceptions_page(View view, SourcecodeTab activity, CustomEditText source)
+    public exceptions_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         FragmentActivity fragmentActivity = activity.getActivity();
@@ -113,9 +113,9 @@ public class exceptions_page
                 dialog.dismiss();
             });
 
-            exceptionToCatchVoice.setOnClickListener(v1 -> activity.startVoiceInput(exceptionToCatch));
+            exceptionToCatchVoice.setOnClickListener(v1 -> activity.startVoiceInput(exceptionToCatch, "PascalCase"));
 
-            exceptionAsVoice.setOnClickListener(v1 -> activity.startVoiceInput(exceptionAs));
+            exceptionAsVoice.setOnClickListener(v1 -> activity.startVoiceInput(exceptionAs, null));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 

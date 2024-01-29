@@ -13,13 +13,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
@@ -33,7 +32,7 @@ public class variables_page
     private final SourcecodeTab activity;
     private final FragmentActivity fragmentActivity;
 
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
     private TextView selectedTextView;
 
     private final TableLayout variablesDefTable;
@@ -42,7 +41,7 @@ public class variables_page
     private String selectedVariable;
     private final int originalSoftInputMode;
 
-    public variables_page(View view, SourcecodeTab activity, CustomEditText source)
+    public variables_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         this.activity = activity;
@@ -84,9 +83,9 @@ public class variables_page
             Button nameVoice = dialog.findViewById(R.id.var_name_voice);
             Button valueVoice = dialog.findViewById(R.id.var_val_voice);
 
-            nameVoice.setOnClickListener(v1 -> activity.startVoiceInput(varName));
+            nameVoice.setOnClickListener(v1 -> activity.startVoiceInput(varName, "snake_case"));
 
-            valueVoice.setOnClickListener(v1 -> activity.startVoiceInput(varVal));
+            valueVoice.setOnClickListener(v1 -> activity.startVoiceInput(varVal, "value"));
 
             applyButton.setOnClickListener(v1 ->
             {
@@ -147,7 +146,7 @@ public class variables_page
 
                 varName.setText("Update: " + selectedVariable);
 
-                valVoice.setOnClickListener(v1 -> activity.startVoiceInput(varValUpdate));
+                valVoice.setOnClickListener(v1 -> activity.startVoiceInput(varValUpdate, "value"));
 
                 applyButton.setOnClickListener(v1 ->
                 {
@@ -246,7 +245,7 @@ public class variables_page
         });
     }
 
-    private void updateVariablesTable()
+    public void updateVariablesTable()
     {
         variableDefinitions = updateVariablesMap();
 

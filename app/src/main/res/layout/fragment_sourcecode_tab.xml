@@ -46,7 +46,7 @@
                 android:minWidth="100dp"
                 android:fillViewport="true">
 
-                <com.PyFlow.CustomEditText
+                <com.PyFlow.SourcecodeEditor
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:id="@+id/sourceCode"
                     android:layout_width="0dp"
@@ -371,6 +371,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Indent"
+            android:textColor="@color/white"
+            android:padding="0dp"
+            android:background="@drawable/utility_button_bg"
+            app:backgroundTint="@null"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/util_untab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Unindent"
             android:textColor="@color/white"
             android:padding="0dp"
             android:background="@drawable/utility_button_bg"

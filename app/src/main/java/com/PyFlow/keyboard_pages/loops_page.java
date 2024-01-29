@@ -6,19 +6,18 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 public class loops_page
 {
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
 
-    public loops_page(View view, SourcecodeTab activity, CustomEditText source)
+    public loops_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         FragmentActivity fragmentActivity = activity.getActivity();
@@ -62,9 +61,9 @@ public class loops_page
                 dialog.dismiss();
             });
 
-            forVarNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(forVarName));
+            forVarNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(forVarName, "snake_case"));
 
-            forIteratorVoice.setOnClickListener(v1 -> activity.startVoiceInput(forIterator));
+            forIteratorVoice.setOnClickListener(v1 -> activity.startVoiceInput(forIterator, "value"));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
@@ -102,7 +101,7 @@ public class loops_page
                 dialog.dismiss();
             });
 
-            whileConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(whileCondition));
+            whileConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(whileCondition, "value"));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 

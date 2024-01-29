@@ -18,7 +18,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
@@ -36,12 +36,12 @@ public class OOP_page
 
     private final TableLayout classDefTable;
     private final TableLayout classKeysTable;
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
     private TextView selectedTextView;
 
-    private List<EditText> paramTextList;
-    private List<View> paramViewList;
-    private LinearLayout paramInputContainer;
+    private List<EditText> argTextList;
+    private List<View> argViewList;
+    private LinearLayout argInputContainer;
 
     private List<EditText> argumentTextList;
     private List<View> argumentViewList;
@@ -50,7 +50,7 @@ public class OOP_page
     private String selectedClass;
     private final int originalSoftInputMode;
 
-    public OOP_page(View view, SourcecodeTab activity, CustomEditText source)
+    public OOP_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
 
@@ -160,11 +160,11 @@ public class OOP_page
             });
 
             // Initialise array for input text boxes and fetch layout reference
-            paramTextList = new ArrayList<>();
-            paramViewList = new ArrayList<>();
-            paramInputContainer = dialog.findViewById(R.id.parametersContainer);
+            argTextList = new ArrayList<>();
+            argViewList = new ArrayList<>();
+            argInputContainer = dialog.findViewById(R.id.parametersContainer);
 
-            classNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(className));
+            classNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(className, "PascalCase"));
 
             addParameterButton.setOnClickListener(v1 ->
             {
@@ -173,36 +173,36 @@ public class OOP_page
 
                 // Get the edit text and add it to the list
                 EditText newInput = inputFieldView.findViewById(R.id.input_field);
-                paramTextList.add(newInput);
+                argTextList.add(newInput);
 
                 // Set the position number
                 TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
-                inputNumber.setText(String.valueOf(paramTextList.size()));
+                inputNumber.setText(String.valueOf(argTextList.size()));
 
                 Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
-                voiceButton.setTag(paramTextList.size() - 1);  // Set the tag
+                voiceButton.setTag(argTextList.size() - 1);  // Set the tag
 
-                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput));
+                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput, "snake_case"));
 
                 // Add the layout to the linear layout and the list
-                paramInputContainer.addView(inputFieldView);
-                paramViewList.add(inputFieldView);
+                argInputContainer.addView(inputFieldView);
+                argViewList.add(inputFieldView);
 
             });
 
             remParameterButton.setOnClickListener(v1 ->
             {
                 // Remove the last view from the linear layout and the list
-                if (!paramViewList.isEmpty())
+                if (!argViewList.isEmpty())
                 {
-                    View lastView = paramViewList.get(paramViewList.size() - 1);
-                    paramInputContainer.removeView(lastView);
-                    paramViewList.remove(lastView);
+                    View lastView = argViewList.get(argViewList.size() - 1);
+                    argInputContainer.removeView(lastView);
+                    argViewList.remove(lastView);
 
                     // Also remove the edit text from the list
-                    if (!paramTextList.isEmpty())
+                    if (!argTextList.isEmpty())
                     {
-                        paramTextList.remove(paramTextList.size() - 1);
+                        argTextList.remove(argTextList.size() - 1);
                     }
                 }
             });
@@ -214,21 +214,18 @@ public class OOP_page
 
                 if(constructorCheckbox.isChecked())
                 {
-                    text = text + "    def __init__(self, ";
+                    text = text + "    def __init__(self";
 
-                    for(int i = 0; i < paramTextList.size(); i++)
+                    for(int i = 0; i < argTextList.size(); i++)
                     {
                         // Get the parameter name
-                        String paramName = paramTextList.get(i).getText().toString();
+                        String paramName = argTextList.get(i).getText().toString();
+
+                        // Add a comma and a space before the parameter
+                        text += ", ";
 
                         // Add the parameter to the function definition
                         text += paramName;
-
-                        // If this is not the last parameter, add a comma and a space
-                        if (i < paramTextList.size() - 1)
-                        {
-                            text += ", ";
-                        }
                     }
 
                     text = text + "):\n";
@@ -278,9 +275,121 @@ public class OOP_page
 
         newObjectButton.setOnClickListener(v ->
         {
+            if(selectedTextView != null)
+            {
+                // Create a new dialog
+                Dialog dialog = new Dialog(activity.getContext());
+                // Set the custom layout for the dialog
+                dialog.setContentView(R.layout.dialog_newobj);
 
+                if (dialog.getWindow() != null)
+                {
+                    dialog.getWindow().setDimAmount(0.6f);
+                    fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                }
+
+                // Initialise array for input text boxes and fetch layout reference
+                argTextList = new ArrayList<>();
+                argViewList = new ArrayList<>();
+                argInputContainer = dialog.findViewById(R.id.argumentsContainer);
+
+                TextView objectTitle = dialog.findViewById(R.id.new_obj_text);
+                selectedClass = selectedTextView.getText().toString();
+                String title = objectTitle.getText() + selectedClass;
+                objectTitle.setText(title);
+
+                EditText objectName = dialog.findViewById(R.id.object_name);
+                Button objectNameVoice = dialog.findViewById(R.id.object_name_voice);
+                Button addArgumentButton = dialog.findViewById(R.id.add_argument);
+                Button remArgumentButton = dialog.findViewById(R.id.remove_argument);
+                Button applyButton = dialog.findViewById(R.id.obj_apply);
+                Button cancelButton = dialog.findViewById(R.id.obj_cancel);
+
+                objectNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(objectName, "snake_case"));
+
+                addArgumentButton.setOnClickListener(v1 ->
+                {
+                    // Inflate the input field layout
+                    View inputFieldView = dialog.getLayoutInflater().inflate(R.layout.input_field, null);
+
+                    // Get the edit text and add it to the list
+                    EditText newInput = inputFieldView.findViewById(R.id.input_field);
+                    argTextList.add(newInput);
+
+                    // Set the position number
+                    TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
+                    inputNumber.setText(String.valueOf(argTextList.size()));
+
+                    Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
+                    voiceButton.setTag(argTextList.size() - 1);  // Set the tag
+
+                    voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput, "snake_case"));
+
+                    // Add the layout to the linear layout and the list
+                    argInputContainer.addView(inputFieldView);
+                    argViewList.add(inputFieldView);
+
+                });
+
+                remArgumentButton.setOnClickListener(v1 ->
+                {
+                    // Remove the last view from the linear layout and the list
+                    if (!argViewList.isEmpty())
+                    {
+                        View lastView = argViewList.get(argViewList.size() - 1);
+                        argInputContainer.removeView(lastView);
+                        argViewList.remove(lastView);
+
+                        // Also remove the edit text from the list
+                        if (!argTextList.isEmpty())
+                        {
+                            argTextList.remove(argTextList.size() - 1);
+                        }
+                    }
+                });
+
+                applyButton.setOnClickListener(v1 ->
+                {
+                    selectedClass = selectedTextView.getText().toString();
+                    // Start the class definition
+                    String text = objectName.getText().toString() + " = " + selectedClass + "(";
+
+                    for(int i = 0; i < argTextList.size(); i++)
+                    {
+                        // Get the parameter name
+                        String argName = argTextList.get(i).getText().toString();
+
+                        // Add the parameter to the function definition
+                        text += argName;
+
+                        // If this is not the last parameter, add a comma and a space
+                        if (i < argTextList.size() - 1)
+                        {
+                            text += ", ";
+                        }
+                    }
+
+                    text = text + ")";
+
+                    // Insert the new object at the cursor position
+                    int start = sourceCode.getSelectionStart();
+                    sourceCode.getText().insert(start, text);
+
+                    // Dismiss the dialog
+                    dialog.dismiss();
+                });
+
+                cancelButton.setOnClickListener(v1 -> dialog.dismiss());
+
+                dialog.setOnDismissListener(v2 ->
+                {
+                    updateClassesTable();
+                    fragmentActivity.getWindow().setSoftInputMode(originalSoftInputMode);
+                });
+
+                dialog.show();
+            }
         });
-
     }
 
     private HashMap<String, Integer> updateClassesMap()
@@ -321,7 +430,7 @@ public class OOP_page
         return classDefinitions;
     }
 
-    private void updateClassesTable()
+    public void updateClassesTable()
     {
         classDefinitions = updateClassesMap();
 

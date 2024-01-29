@@ -17,7 +17,7 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
@@ -37,7 +37,7 @@ public class functions_page
     private final TableLayout functionCallsTable;
     private final TableLayout functionKeysTable;
 
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
     private TextView selectedTextView;
 
     private List<EditText> paramTextList;
@@ -51,7 +51,7 @@ public class functions_page
     private String selectedFunction;
     private final int originalSoftInputMode;
 
-    public functions_page(View view, SourcecodeTab activity, CustomEditText source)
+    public functions_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
 
@@ -200,7 +200,7 @@ public class functions_page
             paramViewList = new ArrayList<>();
             paramInputContainer = dialog.findViewById(R.id.parametersContainer);
 
-            functionNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(funcName));
+            functionNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(funcName, "snake_case"));
 
             addParameterButton.setOnClickListener(v1 ->
             {
@@ -218,7 +218,7 @@ public class functions_page
                 Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                 voiceButton.setTag(paramTextList.size() - 1);  // Set the tag
 
-                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput));
+                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput, "snake_case"));
 
                 // Add the layout to the linear layout and the list
                 paramInputContainer.addView(inputFieldView);
@@ -356,7 +356,7 @@ public class functions_page
                     Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                     voiceButton.setTag(argumentTextList.size() - 1);  // Set the tag
 
-                    voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newArgument));
+                    voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newArgument, "snake_case"));
 
                     // Add the layout to the linear layout and the list
                     argumentInputContainer.addView(inputFieldView);
@@ -431,7 +431,7 @@ public class functions_page
         });
     }
 
-    private void updateFunctionsTable()
+    public void updateFunctionsTable()
     {
         functionDefinitions = updateFunctionsMap();
 

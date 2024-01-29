@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel;
 
 public class SharedViewModel extends ViewModel
 {
-    private final MutableLiveData<CustomEditText> selected = new MutableLiveData<CustomEditText>();
+    private final MutableLiveData<SourcecodeEditor> selected = new MutableLiveData<SourcecodeEditor>();
 
-    public void select(CustomEditText item)
+    public void select(SourcecodeEditor item)
     {
         selected.setValue(item);
     }
 
-    public LiveData<CustomEditText> getSelected()
+    public LiveData<SourcecodeEditor> getSelected()
     {
         return selected;
     }

@@ -9,15 +9,15 @@ import android.widget.TableLayout;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 public class selection_page
 {
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
 
-    public selection_page(View view, SourcecodeTab activity, CustomEditText source)
+    public selection_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         FragmentActivity fragmentActivity = activity.getActivity();
@@ -59,7 +59,7 @@ public class selection_page
                 dialog.dismiss();
             });
 
-            ifConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(ifCondition));
+            ifConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(ifCondition, null));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
@@ -97,7 +97,7 @@ public class selection_page
                 dialog.dismiss();
             });
 
-            elifConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(elifCondition));
+            elifConditionVoice.setOnClickListener(v1 -> activity.startVoiceInput(elifCondition, null));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 

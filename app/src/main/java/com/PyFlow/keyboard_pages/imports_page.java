@@ -10,7 +10,7 @@ import android.widget.TableRow;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
@@ -19,9 +19,9 @@ public class imports_page
     private final FragmentActivity fragmentActivity;
     private final int originalSoftInputMode;
 
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
 
-    public imports_page(View view, SourcecodeTab activity, CustomEditText source)
+    public imports_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         this.fragmentActivity = activity.getActivity();
@@ -107,7 +107,7 @@ public class imports_page
                 dialog.dismiss();
             });
 
-            importVoiceButton.setOnClickListener(v1 -> activity.startVoiceInput(importName));
+            importVoiceButton.setOnClickListener(v1 -> activity.startVoiceInput(importName, null));
 
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 

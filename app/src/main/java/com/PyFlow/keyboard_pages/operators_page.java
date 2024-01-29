@@ -1,21 +1,19 @@
 package com.PyFlow.keyboard_pages;
 
 import android.view.View;
-import android.widget.Button;
 import android.widget.TableLayout;
-import android.widget.TableRow;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.PyFlow.CustomEditText;
+import com.PyFlow.SourcecodeEditor;
 import com.PyFlow.R;
 import com.PyFlow.SourcecodeTab;
 
 public class operators_page
 {
-    private final CustomEditText sourceCode;
+    private final SourcecodeEditor sourceCode;
 
-    public operators_page(View view, SourcecodeTab activity, CustomEditText source)
+    public operators_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
         this.sourceCode = source;
         FragmentActivity fragmentActivity = activity.getActivity();
