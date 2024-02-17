@@ -30,7 +30,7 @@
                 <Button
                     android:id="@+id/new_func"
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="37dp"
                     android:layout_marginEnd="5dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginStart="5dp"
@@ -42,9 +42,18 @@
                     android:paddingEnd="10dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="New Func"
+                    android:text="Insert New Function"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/func_goto"
@@ -105,7 +114,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
@@ -114,8 +122,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Functions"
-                    android:textSize="15dp"
+                    android:text="Definitions"
+                    android:textStyle="bold"
+                    android:textSize="16dp"
                     android:textColor="#ff0032"/>
 
                 <Button
@@ -162,7 +171,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -170,7 +178,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Common Calls"
+                    android:text="Quick Function Call"
+                    android:textStyle="bold"
                     android:textSize="15dp"
                     android:textColor="@color/black"/>
 
@@ -194,10 +203,8 @@
                 android:id="@+id/func_calls_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:showDividers="middle"
-                android:stretchColumns="*"
-                >
+                android:stretchColumns="*">
 
                 <TableRow>
                     <Button android:text="print"

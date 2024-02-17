@@ -14,6 +14,10 @@ public class PagerAdapterMain extends FragmentPagerAdapter
     @Override
     public Fragment getItem(int position)
     {
+        // Only 2 tabs for the main activity
+        // Return the fragment classes corresponding to the position
+        // 0 for sourcecode tab
+        // 1 for execution tab
         switch(position)
         {
             case 0:

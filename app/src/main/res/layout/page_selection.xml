@@ -42,7 +42,7 @@
                     android:paddingEnd="10dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="if"
+                    android:text="New if"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
 
@@ -60,7 +60,7 @@
                     android:paddingEnd="5dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="elif"
+                    android:text="New elif"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
 
@@ -78,7 +78,7 @@
                     android:paddingEnd="5dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="else"
+                    android:text="New else"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
 
@@ -106,7 +106,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Keys"
+                    android:text="Insert Symbols"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
                     android:textSize="15dp" />
 

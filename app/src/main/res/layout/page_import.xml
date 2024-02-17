@@ -30,21 +30,33 @@
                 <Button
                     android:id="@+id/new_imp"
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_marginTop="2dp"
+                    android:layout_height="37dp"
                     android:layout_marginStart="5dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginBottom="2dp"
-                    android:layout_weight="1"
+                    android:layout_weight="1.5"
                     android:background="@drawable/keyboard_button"
                     android:paddingStart="10dp"
                     android:paddingTop="0dp"
                     android:paddingEnd="10dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="New import"
+                    android:text="Insert New Import"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
 
                 <Button
                     android:id="@+id/imp_from"
@@ -115,7 +127,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:textColor="@color/black"
-                    android:text="Standard Imports"
+                    android:text="Quick Imports"
+                    android:textStyle="bold"
                     android:textSize="15dp"/>
 
             </LinearLayout>

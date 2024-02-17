@@ -30,4 +30,16 @@
         android:icon="@drawable/loadfrom_icon"
         android:title="Load From"
         app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_copy"
+        android:icon="@drawable/copy_icon"
+        android:title="Copy"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_paste"
+        android:icon="@drawable/paste_icon"
+        android:title="Paste"
+        app:showAsAction="ifRoom"/>
 </menu>

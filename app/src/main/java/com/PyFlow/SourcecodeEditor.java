@@ -24,6 +24,8 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
     private String lineNumbersString = "";
     private final List<Integer> lineNumbersList = new ArrayList<>();
 
+    // Store lines that were modified in a text operation
+    // So that highlighting is only done on modified lines
     private final Set<Integer> modifiedLines = new HashSet<>();
     private int previousLineCount = 0;
     private int currentLineCount = 0;
@@ -35,6 +37,9 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
     // Dont want to push these changes to the stack
     private boolean isAppOperation = false;
     private int stackLimit = 100;
+
+    // Store current indentation level
+    public String currentIndentation = "";
 
     // A static class to represent edited states for undo and redo operations
     // Also tracks the cursor position to avoid cursor jumps when undo/redo
@@ -54,6 +59,8 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
         }
     }
 
+    // A customized edit text widget for python code, including syntax highlighting and undo + redo
+    // Also responsible for updating the line numbers text view
     public SourcecodeEditor(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -109,7 +116,7 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
                 int endLine = getLayout().getLineForOffset(start + count);
 
                 // Add the changed lines to the set
-                for (int i = startLine; i <= endLine; i++)
+                for(int i = startLine; i <= endLine; i++)
                 {
                     modifiedLines.add(i);
                 }
@@ -132,6 +139,7 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
                 {
                     updateLineNumbers(currentLineCount);
 
+                    // Prevent undo and redo operations pushing states to the undo stack
                     if(!isAppOperation)
                     {
                         redoStack.clear();
@@ -142,20 +150,22 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
                             undoStack.remove(0);
                         }
 
+                        // After text changed and lines have been added or deleted, push a new state to undo to
                         undoStack.push(new undoRedoState(s.toString(), 0, s.length(), getSelectionStart()));
                     }
                 }
 
                 // Iterate over the modified lines and apply syntax highlighting to them
-                for (int line : modifiedLines)
+                for(int line : modifiedLines)
                 {
+                    // Get the start and end of the modified lines in the widget
                     int start = getLayout().getLineStart(line);
                     int end = getLayout().getLineEnd(line);
                     CharSequence lineText = s.subSequence(start, end);
 
                     // Remove all previous spans in this line to prevent overlapping styles
                     ForegroundColorSpan[] oldSpans = s.getSpans(start, end, ForegroundColorSpan.class);
-                    for (ForegroundColorSpan span : oldSpans)
+                    for(ForegroundColorSpan span : oldSpans)
                     {
                         s.removeSpan(span);
                     }
@@ -172,13 +182,16 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
                 modifiedLines.clear();
             }
 
-            private void highlightSyntax(Editable s, CharSequence lineText, int start, Pattern pattern, int color)
+            // Highlights a line using spans, according to the regex pattern, colour and text passed in
+            private void highlightSyntax(Editable s, CharSequence lineText, int start, Pattern pattern, int colour)
             {
                 Matcher matcher = pattern.matcher(lineText);
 
-                while (matcher.find())
+                // If in the text given, the pattern given is matched
+                while(matcher.find())
                 {
-                    ForegroundColorSpan span = new ForegroundColorSpan(color);
+                    // Apply a span to that line, for the start and end of the matched text, using the colour given
+                    ForegroundColorSpan span = new ForegroundColorSpan(colour);
                     s.setSpan(span, start + matcher.start(), start + matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
@@ -195,9 +208,9 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
     public void undo()
     {
         // If there are changes to revert back to
-        if (!undoStack.empty())
+        if(!undoStack.empty())
         {
-            isAppOperation = true;
+            isAppOperation = true; // Ensure changes made by an undo arent pushed to any of the stacks
 
             // Pop the state change and set it as the text
             // Before setting text, create a new edit object to be pushed to the redo stack
@@ -210,11 +223,12 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
                 redoStack.remove(0);
             }
 
+            // before applying undo operation, store the current state to the redo stack, to allow users to go back to it
             redoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
-            setText(edit.text);
+            setText(edit.text); // Then update the text for the undo operation
             setSelection(edit.cursor);
 
-            isAppOperation = false;
+            isAppOperation = false; // Reset the flag
         }
     }
 
@@ -223,7 +237,7 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
         // If there are changes to re perform
         if(!redoStack.empty())
         {
-            isAppOperation = true;
+            isAppOperation = true; // Ensure changes made by an undo arent pushed to any of the stacks
 
             // Similar logic as undo, pop the state change, push the current state to the undo stack
             // Then set the text to the redo state
@@ -232,10 +246,12 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
             setText(edit.text);
             setSelection(edit.cursor);
 
-            isAppOperation = false;
+            isAppOperation = false; // Reset the flag
         }
     }
 
+    // Method to clear both stacks, which also pushes an initial state to the undo stack
+    // Called after loading in a new file
     public void clearStacks()
     {
         redoStack.clear();
@@ -244,11 +260,49 @@ public class SourcecodeEditor extends androidx.appcompat.widget.AppCompatEditTex
         undoStack.push(new undoRedoState(getText().toString(), 0, length(), getSelectionStart()));
     }
 
+    // Toggle allowing keyboard to pop up
     public void allowSoftInput(boolean allow)
     {
         this.setShowSoftInputOnFocus(allow);
     }
 
+    // Fetch the indentation level of the current line
+    // Used when pressing the enter key to maintain or increase indentation
+    public String getIndentationLevel()
+    {
+        // Get reference to the current line, where it starts and ends
+        int start = getSelectionStart();
+        int line = getLayout().getLineForOffset(start);
+        int lineStartPos = getLayout().getLineStart(line);
+        int lineEndPos = getLayout().getLineEnd(line);
+
+        // Substring the start and end of the line to fetch the content of it
+        String lineContent = getText().toString().substring(lineStartPos, lineEndPos);
+
+        // Reset currentIndentation
+        currentIndentation = "";
+
+        // Match the indentation of the line
+        // Use regex pattern to match one or more spaces or tabs at the start of the line
+        Matcher indentationPattern = Pattern.compile("^[ \\t]+").matcher(lineContent);
+        if(indentationPattern.find()) // If spaces or tabs found
+        {
+            // Store the spaces or tabs, essentially the current indentation level
+            currentIndentation = indentationPattern.group();
+        }
+
+        // Check if the line ends with a colon
+        if(lineContent.trim().endsWith(":"))
+        {
+            // Increase the indentation by one level
+            currentIndentation += "    ";
+        }
+
+        // Return the updated indentation
+        return currentIndentation;
+    }
+
+    // Set the text view to be updated with line numbers
     public void setLineNumberView(TextView lineNumberView)
     {
         this.lineNumbers = lineNumberView;

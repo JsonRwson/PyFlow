@@ -30,7 +30,7 @@
                 <Button
                     android:id="@+id/new_class"
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="37dp"
                     android:layout_marginEnd="5dp"
                     android:layout_marginTop="2dp"
                     android:layout_marginStart="5dp"
@@ -42,9 +42,18 @@
                     android:paddingEnd="10dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="New Class"
+                    android:text="Create New Class"
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/oop_goto"
@@ -96,7 +105,7 @@
                     android:paddingEnd="5dp"
                     android:paddingBottom="0dp"
                     android:singleLine="true"
-                    android:text="New Obj"
+                    android:text="New Object"
                     android:textColor="#ff6900"
                     app:backgroundTint="@null" />
 
@@ -105,7 +114,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
@@ -114,8 +122,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Classes"
-                    android:textSize="15dp"
+                    android:text="Definitions"
+                    android:textStyle="bold"
+                    android:textSize="16dp"
                     android:textColor="#ff6900"/>
 
                 <Button
@@ -162,7 +171,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -170,7 +178,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:text="Keys"
+                    android:text="Insert Symbols"
+                    android:textStyle="bold"
                     android:textColor="@color/black"
                     android:textSize="15dp" />
 
@@ -194,7 +203,6 @@
                 android:id="@+id/oop_keys_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:showDividers="middle"
                 android:stretchColumns="*"
                 >

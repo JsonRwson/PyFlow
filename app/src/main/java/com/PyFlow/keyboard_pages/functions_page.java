@@ -27,80 +27,103 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Functions Page ===========================================================
+// Class for the functions page of the custom keyboard
+// Allows the user to insert a new function and set parameters
+// The page tracks defined functions and allows users to call, goto or paste them
+// The page has a set of buttons to quickly call common functions
+// The page has a set of quick input buttons for function related purposes
+
 public class functions_page
 {
+    // Hashmap to store user defined functions and their location in the editor
     private HashMap<String, Integer> functionDefinitions;
     private final SourcecodeTab activity;
     private final FragmentActivity fragmentActivity;
 
+    // Layouts for the tables that contain the quick input buttons and tracked function
     private final TableLayout functionsDefTable;
     private final TableLayout functionCallsTable;
     private final TableLayout functionKeysTable;
 
+    // Reference for the editor widget and the currently selected function definition widget
     private final SourcecodeEditor sourceCode;
     private TextView selectedTextView;
 
+    // Structures and view that relate to parameters in the new function dialog
     private List<EditText> paramTextList;
     private List<View> paramViewList;
     private LinearLayout paramInputContainer;
 
+    // Structures and view that relate to arguments in the call function dialog
     private List<EditText> argumentTextList;
     private List<View> argumentViewList;
     private LinearLayout argumentInputContainer;
 
+    // String to store the name of the currently selected function definition
+    // Store the original soft input mode, to revert back to after a dialog is closed
     private String selectedFunction;
     private final int originalSoftInputMode;
 
     public functions_page(View view, SourcecodeTab activity, SourcecodeEditor source)
     {
-        this.sourceCode = source;
-
+        // References to the sourcecode editor widget and the activity for the fragment
+        sourceCode = source;
         this.activity = activity;
-        this.fragmentActivity = activity.getActivity();
-        this.originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
+        fragmentActivity = activity.getActivity();
 
-        this.functionsDefTable = view.findViewById(R.id.func_def_table);
-        this.functionCallsTable = view.findViewById(R.id.func_calls_table);
-        this.functionKeysTable = view.findViewById(R.id.func_keys_table);
+        // Store the soft input mode, original mode, opening the soft keyboard pushes up widgets on screen
+        originalSoftInputMode = fragmentActivity.getWindow().getAttributes().softInputMode;
 
+        // References to the tables to store quick input buttons and user functions
+        functionsDefTable = view.findViewById(R.id.func_def_table);
+        functionCallsTable = view.findViewById(R.id.func_calls_table);
+        functionKeysTable = view.findViewById(R.id.func_keys_table);
+
+        // References to the non-table page buttons
         Button newFunctionButton = view.findViewById(R.id.new_func);
         Button refreshDefinitionsButton = view.findViewById(R.id.func_def_refresh);
         Button collapseDefinitionsButton = view.findViewById(R.id.func_def_collapse);
+
+        // Buttons to collapse the table buttons
         Button collapseCallsButton = view.findViewById(R.id.func_calls_collapse);
         Button collapseKeysButton = view.findViewById(R.id.func_keys_collapse);
+
+        // Buttons related to the currently selected user defined function
         Button gotoFuncButton = view.findViewById(R.id.func_goto);
         Button callFuncButton = view.findViewById(R.id.func_call);
         Button pasteFuncButton = view.findViewById(R.id.func_paste);
 
-        for (int i = 0; i < functionCallsTable.getChildCount(); i++)
+        // For all the buttons in the common function calls table
+        // Set an on click so that the function is called and the cursor is placed between the parenthesis
+        // Iterate through all the rows of the table
+        for(int i = 0; i < functionCallsTable.getChildCount(); i++)
         {
-            View row = functionCallsTable.getChildAt(i);
-            if (row instanceof TableRow)
+            // Iterate through all the buttons in the table row
+            TableRow tableRow = (TableRow) functionCallsTable.getChildAt(i);
+            for(int j = 0; j < tableRow.getChildCount(); j++)
             {
-                TableRow tableRow = (TableRow) row;
-                for (int j = 0; j < tableRow.getChildCount(); j++)
+                View child = tableRow.getChildAt(j);
+                Button button = (Button) child;
+
+                // Set an onclick so that it inserts the function
+                // "(text of the button)()" <-- then move cursor inside parenthesis
+                button.setOnClickListener(v ->
                 {
-                    View child = tableRow.getChildAt(j);
-                    if (child instanceof Button)
-                    {
-                        Button button = (Button) child;
-                        button.setOnClickListener(v ->
-                        {
-                            // Get the text from the button
-                            String text = button.getText().toString();
+                    // Get the text from the button
+                    String text = button.getText().toString();
 
-                            // Insert the text at the current cursor position
-                            int start = sourceCode.getSelectionStart();
-                            sourceCode.getText().insert(start, text + "()");
+                    // Insert the text at the current cursor position
+                    int start = sourceCode.getSelectionStart();
+                    sourceCode.getText().insert(start, text + "()");
 
-                            // Move the cursor back to sit inside the parenthesis
-                            sourceCode.setSelection(start + text.length() + 1);
-                        });
-                    }
-                }
+                    // Move the cursor back to sit inside the parenthesis
+                    sourceCode.setSelection(start + text.length() + 1);
+                });
             }
         }
 
+        // Set onclick for quick input keys so they insert the button text into the editor
         activity.setOnclickForTableButtons(functionKeysTable, null, null);
 
         // Use a one element array because lambda variables should be final
@@ -108,7 +131,7 @@ public class functions_page
         final boolean[] isDefTableVisible = {true};
         collapseDefinitionsButton.setOnClickListener(v ->
         {
-            if (isDefTableVisible[0])
+            if(isDefTableVisible[0])
             {
                 // Hide the table layout
                 functionsDefTable.setVisibility(View.GONE);
@@ -126,10 +149,13 @@ public class functions_page
             isDefTableVisible[0] = !isDefTableVisible[0];
         });
 
+
+        // Use a one element array because lambda variables should be final
+        // Toggle collapse the table for common function calls
         final boolean[] isCallsTableVisible = {true};
         collapseCallsButton.setOnClickListener(v ->
         {
-            if (isCallsTableVisible[0])
+            if(isCallsTableVisible[0])
             {
                 // Hide the table layout
                 functionCallsTable.setVisibility(View.GONE);
@@ -147,10 +173,12 @@ public class functions_page
             isCallsTableVisible[0] = !isCallsTableVisible[0];
         });
 
+        // Use a one element array because lambda variables should be final
+        // Toggle collapse the table for quick input keys
         final boolean[] isKeyTableVisible = {true};
         collapseKeysButton.setOnClickListener(v ->
         {
-            if (isKeyTableVisible[0])
+            if(isKeyTableVisible[0])
             {
                 // Hide the table layout
                 functionKeysTable.setVisibility(View.GONE);
@@ -173,6 +201,8 @@ public class functions_page
         // Then add them as elements to be viewed in the table layout
         refreshDefinitionsButton.setOnClickListener(v -> updateFunctionsTable());
 
+        // Button to open a dialog to insert a new function
+        // Allows user to set parameters for their function
         newFunctionButton.setOnClickListener(v ->
         {
             // Create a new dialog
@@ -180,18 +210,23 @@ public class functions_page
             // Set the custom layout for the dialog
             dialog.setContentView(R.layout.dialog_newfunc);
 
+            // Dim the background of the dialog
+            // Set the soft input mode so the keyboard does not push up the dialog when opened
             if(dialog.getWindow() != null)
             {
                 dialog.getWindow().setDimAmount(0.6f);
                 fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
             }
 
+            // References to widgets on the dialog
             EditText funcName = dialog.findViewById(R.id.func_name);
 
             Button applyButton = dialog.findViewById(R.id.func_apply);
             Button cancelButton = dialog.findViewById(R.id.func_cancel);
             Button functionNameVoice = dialog.findViewById(R.id.func_name_voice);
 
+            // Buttons to add or remove parameters
+            // Parameters are added as input boxes to a scrollable layout
             Button addParameterButton = dialog.findViewById(R.id.add_param);
             Button remParameterButton = dialog.findViewById(R.id.remove_param);
 
@@ -200,24 +235,29 @@ public class functions_page
             paramViewList = new ArrayList<>();
             paramInputContainer = dialog.findViewById(R.id.parametersContainer);
 
+            // Call method to add functionality to voice button
+            // Post process voice data so that function names automatically follow pep 8 naming conventions, snake case
             functionNameVoice.setOnClickListener(v1 -> activity.startVoiceInput(funcName, "snake_case"));
 
+            // Add a parameter input box to the dialog
             addParameterButton.setOnClickListener(v1 ->
             {
                 // Inflate the input field layout
                 View inputFieldView = dialog.getLayoutInflater().inflate(R.layout.input_field, null);
 
-                // Get the edit text and add it to the list
+                // Get the edit text and add it to the list of parameter input boxes
                 EditText newInput = inputFieldView.findViewById(R.id.input_field);
                 paramTextList.add(newInput);
 
-                // Set the position number
+                // Set the position number text view
                 TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
                 inputNumber.setText(String.valueOf(paramTextList.size()));
 
+                // Get the voice button for the new parameter input
                 Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                 voiceButton.setTag(paramTextList.size() - 1);  // Set the tag
 
+                // Add text to speech functionality to the button, post process voice data to use snake case
                 voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newInput, "snake_case"));
 
                 // Add the layout to the linear layout and the list
@@ -231,6 +271,7 @@ public class functions_page
                 // Remove the last view from the linear layout and the list
                 if (!paramViewList.isEmpty())
                 {
+                    // Get the last parameter view in the list and remove it from both the input container and view list
                     View lastView = paramViewList.get(paramViewList.size() - 1);
                     paramInputContainer.removeView(lastView);
                     paramViewList.remove(lastView);
@@ -246,7 +287,7 @@ public class functions_page
             applyButton.setOnClickListener(v1 ->
             {
                 // Start the function definition
-                String text = "def " + funcName.getText().toString() + "(";
+                StringBuilder text = new StringBuilder("def " + funcName.getText().toString() + "(");
 
                 // Iterate over the views and add each parameter to the function definition
                 for(int i = 0; i < paramTextList.size(); i++)
@@ -255,21 +296,21 @@ public class functions_page
                     String paramName = paramTextList.get(i).getText().toString();
 
                     // Add the parameter to the function definition
-                    text += paramName;
+                    text.append(paramName);
 
                     // If this is not the last parameter, add a comma and a space
                     if (i < paramTextList.size() - 1)
                     {
-                        text += ", ";
+                        text.append(", ");
                     }
                 }
 
                 // Close the parenthesis
-                text += "):\n";
+                text.append("):");
 
                 // Insert the func definition at the cursor position
                 int start = sourceCode.getSelectionStart();
-                sourceCode.getText().insert(start, text);
+                sourceCode.getText().insert(start, text.toString());
 
                 // Dismiss the dialog
                 dialog.dismiss();
@@ -286,33 +327,41 @@ public class functions_page
             dialog.show();
         });
 
+        // Button to jump to the position of the selected function definition in the editor
         gotoFuncButton.setOnClickListener(v1 ->
         {
-            if(selectedTextView != null)
+            if(selectedTextView != null) // Check a definition is selected
             {
                 selectedFunction = selectedTextView.getText().toString();
+                // Check the function exists in the hashmap
                 if(functionDefinitions.containsKey(selectedFunction))
                 {
+                    // If so, use the stored position and set the selection to it
                     int var_pos = functionDefinitions.get(selectedFunction);
                     sourceCode.setSelection(var_pos);
                 }
             }
         });
 
+        // Button to paste the name of the selected function definition in the editor
         pasteFuncButton.setOnClickListener(v ->
         {
-            if(selectedTextView != null)
+            if(selectedTextView != null) // Check a definition is selected
             {
+                // If so, get the name of the function from the text view
                 selectedFunction = selectedTextView.getText().toString();
                 int start = sourceCode.getSelectionStart();
+                // Insert it into the editor at the current position
                 sourceCode.getText().insert(start, selectedFunction);
             }
         });
 
+        // Button to call the selected function
         callFuncButton.setOnClickListener(v ->
         {
-            if (selectedTextView != null)
+            if (selectedTextView != null) // Check a definition is selected
             {
+                // Get the name of the function
                 selectedFunction = selectedTextView.getText().toString();
 
                 // Create a new dialog
@@ -322,11 +371,12 @@ public class functions_page
 
                 if(dialog.getWindow() != null)
                 {
+                    // Dim the background and prevent the keyboard pushing up the dialog
                     dialog.getWindow().setDimAmount(0.6f);
                     fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
                 }
 
-                // Find the views
+                // Find the views in the dialog
                 TextView funcName = dialog.findViewById(R.id.func_call_name);
                 Button applyButton = dialog.findViewById(R.id.func_call_apply);
                 Button cancelButton = dialog.findViewById(R.id.func_call_cancel);
@@ -340,6 +390,7 @@ public class functions_page
 
                 funcName.setText("Call: " + selectedFunction);
 
+                // Button to add an argument to pass to function call
                 addArgumentButton.setOnClickListener(v1 ->
                 {
                     // Inflate the input field layout
@@ -353,9 +404,11 @@ public class functions_page
                     TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
                     inputNumber.setText(String.valueOf(argumentViewList.size()));
 
+                    // Create a voice button to voice type the argument
                     Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
                     voiceButton.setTag(argumentTextList.size() - 1);  // Set the tag
 
+                    // Set text to speech functionality and post process to apply snake cake
                     voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newArgument, "snake_case"));
 
                     // Add the layout to the linear layout and the list
@@ -363,11 +416,13 @@ public class functions_page
                     argumentViewList.add(inputFieldView);
                 });
 
+                // Button to remove an argument
                 remArgumentButton.setOnClickListener(v1 ->
                 {
                     // Remove the last view from the linear layout and the list
-                    if (!argumentTextList.isEmpty())
+                    if (!argumentTextList.isEmpty()) // Check there's an argument to remove
                     {
+                        // Remove the last view in the list
                         View lastView = argumentViewList.get(argumentViewList.size() - 1);
                         argumentInputContainer.removeView(lastView);
                         argumentViewList.remove(lastView);
@@ -380,10 +435,11 @@ public class functions_page
                     }
                 });
 
+                // Apply the function call
                 applyButton.setOnClickListener(v1 ->
                 {
                     // Get the text from the edit text
-                    String text = selectedFunction + "(";
+                    StringBuilder text = new StringBuilder(selectedFunction + "(");
 
                     // Iterate over the views and add each parameter to the function definition
                     for (int i = 0; i < argumentTextList.size(); i++)
@@ -392,21 +448,21 @@ public class functions_page
                         String paramName = argumentTextList.get(i).getText().toString();
 
                         // Add the parameter to the function definition
-                        text += paramName;
+                        text.append(paramName);
 
                         // If this is not the last parameter, add a comma and a space
                         if (i < argumentTextList.size() - 1)
                         {
-                            text += ", ";
+                            text.append(", ");
                         }
                     }
 
                     // Close the parenthesis
-                    text += ")";
+                    text.append(")");
 
                     // Insert the text at the current cursor position
                     int start = sourceCode.getSelectionStart();
-                    sourceCode.getText().insert(start, text);
+                    sourceCode.getText().insert(start, text.toString());
 
                     // Move the cursor back inside the parenthesis
                     sourceCode.setSelection(start + text.length() - 1);
@@ -415,11 +471,9 @@ public class functions_page
                     dialog.dismiss();
                 });
 
-                cancelButton.setOnClickListener(v1 ->
-                {
-                    dialog.dismiss();
-                });
+                cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
+                // On dismiss update the functions table and reset the soft input mode
                 dialog.setOnDismissListener(v1 ->
                 {
                     updateFunctionsTable();
@@ -431,8 +485,10 @@ public class functions_page
         });
     }
 
+    // Function to refresh the table of function definitions
     public void updateFunctionsTable()
     {
+        // Fetch function definitions in the editor
         functionDefinitions = updateFunctionsMap();
 
         // Reset selected values
@@ -446,16 +502,19 @@ public class functions_page
         LinearLayout linearLayout = null;
 
         int i = 0;
+        // Iterate through the functions in the hashmap
         for (String functionName : functionDefinitions.keySet())
         {
-            if (i % 3 == 0)
+            if (i % 3 == 0) // Ensure 3 per row
             {
+                // Add a new layout if the previous is filled
                 linearLayout = new LinearLayout(activity.getActivity());
                 linearLayout.setOrientation(LinearLayout.HORIZONTAL);
                 functionsDefTable.addView(linearLayout);
             }
 
             // Create a new text view for the function
+            // Set some default attributes e.g. size, alignment and truncation mode
             TextView textView = new TextView(activity.getActivity());
             textView.setText(functionName);
             textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
@@ -470,7 +529,7 @@ public class functions_page
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
             textView.setLayoutParams(params);
 
-            // Add an onclick to the text view
+            // Add an onclick to the text view to make it selectable
             textView.setClickable(true);
             textView.setOnClickListener(v ->
             {
@@ -485,14 +544,16 @@ public class functions_page
                 selectedTextView.setBackgroundColor(Color.LTGRAY);
             });
 
+            // Add the new text views for each function definition
             linearLayout.addView(textView);
-
             i++;
         }
     }
 
+    // Method to update the map of function definitions
     private HashMap<String, Integer> updateFunctionsMap()
     {
+        // Clear the hashmap and fetch the text from the editor
         HashMap<String, Integer> functionDefinitions = new HashMap<>();
         String text = sourceCode.getText().toString();
         String[] lines = text.split("\\n");
@@ -502,30 +563,34 @@ public class functions_page
         Pattern pattern = Pattern.compile("def\\s+(\\w+)\\s*\\(.*\\)\\s*:");
 
         int index = 0;
+        // Iterate through the lines of the code
         for (String s : lines)
         {
             String line = s.trim();
-            if (line.startsWith("#")) // ignore comments
+            if(line.startsWith("#")) // ignore comments
             {
                 index += line.length() + 1;
                 continue;
             }
 
+            // Find function definitions using regex pattern
             Matcher matcher = pattern.matcher(line);
 
-            if (matcher.find())
+            // If we find a definition on this line
+            if(matcher.find())
             {
+                // Get the captured name
                 String functionName = matcher.group(1);
 
-                if (!functionDefinitions.containsKey(functionName))
+                // If we havent already added this function
+                if(!functionDefinitions.containsKey(functionName))
                 {
+                    // Add the definition to the hashmap along with its position in the editor
                     functionDefinitions.put(functionName, index + line.indexOf(functionName));
                 }
             }
-
             index += line.length() + 1;
         }
-
         return functionDefinitions;
     }
 }

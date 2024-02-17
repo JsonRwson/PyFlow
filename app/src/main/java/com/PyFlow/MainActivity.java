@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create the toolbar for the editor
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -27,10 +28,11 @@ public class MainActivity extends AppCompatActivity
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
+        // Add icons to the tab to represent the editor and execution pages
         tabLayout.getTabAt(0).setIcon(R.drawable.code_icon);
         tabLayout.getTabAt(1).setIcon(R.drawable.play_icon);
 
-        // Disable swiping to switch tabs
+        // Disable swiping to switch tabs between the sourcecode editor and execution tab
         viewPager.setPagingEnabled(false);
     }
 
