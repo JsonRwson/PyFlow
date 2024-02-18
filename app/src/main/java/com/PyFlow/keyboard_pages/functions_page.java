@@ -82,6 +82,7 @@ public class functions_page
 
         // References to the non-table page buttons
         Button newFunctionButton = view.findViewById(R.id.new_func);
+        Button callNewFunctionButton = view.findViewById(R.id.call_new_func);
         Button refreshDefinitionsButton = view.findViewById(R.id.func_def_refresh);
         Button collapseDefinitionsButton = view.findViewById(R.id.func_def_collapse);
 
@@ -269,7 +270,7 @@ public class functions_page
             remParameterButton.setOnClickListener(v1 ->
             {
                 // Remove the last view from the linear layout and the list
-                if (!paramViewList.isEmpty())
+                if(!paramViewList.isEmpty())
                 {
                     // Get the last parameter view in the list and remove it from both the input container and view list
                     View lastView = paramViewList.get(paramViewList.size() - 1);
@@ -277,7 +278,7 @@ public class functions_page
                     paramViewList.remove(lastView);
 
                     // Also remove the edit text from the list
-                    if (!paramTextList.isEmpty())
+                    if(!paramTextList.isEmpty())
                     {
                         paramTextList.remove(paramTextList.size() - 1);
                     }
@@ -299,7 +300,7 @@ public class functions_page
                     text.append(paramName);
 
                     // If this is not the last parameter, add a comma and a space
-                    if (i < paramTextList.size() - 1)
+                    if(i < paramTextList.size() - 1)
                     {
                         text.append(", ");
                     }
@@ -319,6 +320,129 @@ public class functions_page
             cancelButton.setOnClickListener(v1 -> dialog.dismiss());
 
             dialog.setOnDismissListener(v2 ->
+            {
+                updateFunctionsTable();
+                fragmentActivity.getWindow().setSoftInputMode(originalSoftInputMode);
+            });
+
+            dialog.show();
+        });
+
+        // Call any function desired
+        callNewFunctionButton.setOnClickListener(v ->
+        {
+            // Create a new dialog
+            Dialog dialog = new Dialog(activity.getContext());
+            // Set the custom layout for the dialog
+            dialog.setContentView(R.layout.dialog_call_newfunc);
+
+            if(dialog.getWindow() != null)
+            {
+                // Dim the background and prevent the keyboard pushing up the dialog
+                dialog.getWindow().setDimAmount(0.6f);
+                fragmentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            }
+
+            // Find the views in the dialog
+            EditText funcName = dialog.findViewById(R.id.call_newfunc_name);
+            Button funcNameVoice = dialog.findViewById(R.id.call_newfunc_name_voice);
+            Button applyButton = dialog.findViewById(R.id.func_call_apply);
+            Button cancelButton = dialog.findViewById(R.id.func_call_cancel);
+            Button addArgumentButton = dialog.findViewById(R.id.add_param);
+            Button remArgumentButton = dialog.findViewById(R.id.remove_param);
+
+            // Initialise array for input text boxes and fetch layout reference
+            argumentTextList = new ArrayList<>();
+            argumentViewList = new ArrayList<>();
+            argumentInputContainer = dialog.findViewById(R.id.argumentsContainer);
+
+            // Button to add an argument to pass to function call
+            addArgumentButton.setOnClickListener(v1 ->
+            {
+                // Inflate the input field layout
+                View inputFieldView = dialog.getLayoutInflater().inflate(R.layout.input_field, null);
+
+                // Get the edit text and add it to the list
+                EditText newArgument = inputFieldView.findViewById(R.id.input_field);
+                argumentTextList.add(newArgument);
+
+                // Set the position number
+                TextView inputNumber = inputFieldView.findViewById(R.id.input_number);
+                inputNumber.setText(String.valueOf(argumentViewList.size()));
+
+                // Create a voice button to voice type the argument
+                Button voiceButton = inputFieldView.findViewById(R.id.voice_button);
+                voiceButton.setTag(argumentTextList.size() - 1);  // Set the tag
+
+                // Set text to speech functionality and post process to apply snake cake
+                voiceButton.setOnClickListener(v2 -> activity.startVoiceInput(newArgument, "snake_case"));
+
+                // Add the layout to the linear layout and the list
+                argumentInputContainer.addView(inputFieldView);
+                argumentViewList.add(inputFieldView);
+            });
+
+            // Button to remove an argument
+            remArgumentButton.setOnClickListener(v1 ->
+            {
+                // Remove the last view from the linear layout and the list
+                if(!argumentTextList.isEmpty()) // Check there's an argument to remove
+                {
+                    // Remove the last view in the list
+                    View lastView = argumentViewList.get(argumentViewList.size() - 1);
+                    argumentInputContainer.removeView(lastView);
+                    argumentViewList.remove(lastView);
+
+                    // Also remove the edit text from the list
+                    if(!argumentTextList.isEmpty())
+                    {
+                        argumentTextList.remove(argumentTextList.size() - 1);
+                    }
+                }
+            });
+
+            // Apply the function call
+            applyButton.setOnClickListener(v1 ->
+            {
+                // Get the text from the edit text
+                StringBuilder text = new StringBuilder(funcName.getText().toString() + "(");
+
+                // Iterate over the views and add each parameter to the function call
+                for(int i = 0; i < argumentTextList.size(); i++)
+                {
+                    // Get the parameter name
+                    String paramName = argumentTextList.get(i).getText().toString();
+
+                    // Add the parameter to the function definition
+                    text.append(paramName);
+
+                    // If this is not the last parameter, add a comma and a space
+                    if(i < argumentTextList.size() - 1)
+                    {
+                        text.append(", ");
+                    }
+                }
+
+                // Close the parenthesis
+                text.append(")");
+
+                // Insert the text at the current cursor position
+                int start = sourceCode.getSelectionStart();
+                sourceCode.getText().insert(start, text.toString());
+
+                // Move the cursor back inside the parenthesis
+                sourceCode.setSelection(start + text.length() - 1);
+
+                // Dismiss the dialog
+                dialog.dismiss();
+            });
+
+            funcNameVoice.setOnClickListener((v1 -> activity.startVoiceInput(funcName, "snake_case")));
+
+            cancelButton.setOnClickListener(v2 -> dialog.dismiss());
+
+            // On dismiss update the functions table and reset the soft input mode
+            dialog.setOnDismissListener(v1 ->
             {
                 updateFunctionsTable();
                 fragmentActivity.getWindow().setSoftInputMode(originalSoftInputMode);
@@ -356,10 +480,10 @@ public class functions_page
             }
         });
 
-        // Button to call the selected function
+        // Button to call a selected function from the definitions table
         callFuncButton.setOnClickListener(v ->
         {
-            if (selectedTextView != null) // Check a definition is selected
+            if(selectedTextView != null) // Check a definition is selected
             {
                 // Get the name of the function
                 selectedFunction = selectedTextView.getText().toString();
@@ -420,7 +544,7 @@ public class functions_page
                 remArgumentButton.setOnClickListener(v1 ->
                 {
                     // Remove the last view from the linear layout and the list
-                    if (!argumentTextList.isEmpty()) // Check there's an argument to remove
+                    if(!argumentTextList.isEmpty()) // Check there's an argument to remove
                     {
                         // Remove the last view in the list
                         View lastView = argumentViewList.get(argumentViewList.size() - 1);
@@ -428,7 +552,7 @@ public class functions_page
                         argumentViewList.remove(lastView);
 
                         // Also remove the edit text from the list
-                        if (!argumentTextList.isEmpty())
+                        if(!argumentTextList.isEmpty())
                         {
                             argumentTextList.remove(argumentTextList.size() - 1);
                         }
@@ -442,7 +566,7 @@ public class functions_page
                     StringBuilder text = new StringBuilder(selectedFunction + "(");
 
                     // Iterate over the views and add each parameter to the function definition
-                    for (int i = 0; i < argumentTextList.size(); i++)
+                    for(int i = 0; i < argumentTextList.size(); i++)
                     {
                         // Get the parameter name
                         String paramName = argumentTextList.get(i).getText().toString();
@@ -451,7 +575,7 @@ public class functions_page
                         text.append(paramName);
 
                         // If this is not the last parameter, add a comma and a space
-                        if (i < argumentTextList.size() - 1)
+                        if(i < argumentTextList.size() - 1)
                         {
                             text.append(", ");
                         }

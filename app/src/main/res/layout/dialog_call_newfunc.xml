@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:layout_width="wrap_content"
+    android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="15dp"
@@ -11,22 +11,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="New Import"
+        android:text="Call New Function"
         android:padding="15dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12dp"
-        android:text="From Python 3.8 Standard Library"
-        android:paddingBottom="5dp"
-        android:paddingLeft="15dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:textSize="15dp"
-        android:text="Package"
+        android:text="Name"
         android:paddingBottom="5dp"
         android:paddingLeft="15dp"/>
 
@@ -38,7 +30,7 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/imp_name"
+            android:id="@+id/call_newfunc_name"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
             android:minLines="1"
@@ -48,7 +40,7 @@
             android:background="@drawable/input_field_text_bg"/>
 
         <Button
-            android:id="@+id/imp_name_voice"
+            android:id="@+id/call_newfunc_name_voice"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
@@ -57,20 +49,66 @@
 
     </LinearLayout>
 
+
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"
+            android:text="Arguments"
+            android:paddingBottom="5dp"
+            android:paddingLeft="15dp"/>
+
+        <Button
+            android:id="@+id/add_param"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:text="add"
+            android:background="@drawable/add_icon" />
+
+        <Button
+            android:id="@+id/remove_param"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            app:backgroundTint="@null"
+            android:background="@drawable/remove_icon"/>
+
+    </LinearLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <LinearLayout
+            android:id="@+id/argumentsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/imp_apply"
+            android:id="@+id/func_call_apply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Apply"/>
 
         <Button
-            android:id="@+id/imp_cancel"
+            android:id="@+id/func_call_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"

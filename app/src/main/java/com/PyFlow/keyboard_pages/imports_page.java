@@ -156,6 +156,9 @@ public class imports_page
                 // Insert the text at the top of the file
                 sourceCode.getText().insert(0, text + "\n");
 
+                // Update tracked imports
+                updateImportsTable();
+
                 // Dismiss the dialog
                 dialog.dismiss();
             });

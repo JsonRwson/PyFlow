@@ -46,6 +46,25 @@
                     android:textColor="@color/black"
                     app:backgroundTint="@null" />
 
+                <Button
+                    android:id="@+id/call_new_func"
+                    android:layout_width="0dp"
+                    android:layout_height="37dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/keyboard_button"
+                    android:paddingStart="10dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="0dp"
+                    android:singleLine="true"
+                    android:text="Call New Function"
+                    android:textColor="@color/black"
+                    app:backgroundTint="@null" />
+
             </LinearLayout>
 
             <LinearLayout
