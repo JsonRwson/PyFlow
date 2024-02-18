@@ -337,8 +337,8 @@ public class functions_page
                 if(functionDefinitions.containsKey(selectedFunction))
                 {
                     // If so, use the stored position and set the selection to it
-                    int var_pos = functionDefinitions.get(selectedFunction);
-                    sourceCode.setSelection(var_pos);
+                    int func_pos = functionDefinitions.get(selectedFunction);
+                    sourceCode.setSelection(func_pos);
                 }
             }
         });
@@ -485,7 +485,7 @@ public class functions_page
         });
     }
 
-    // Function to refresh the table of function definitions
+    // Method to refresh the table of function definitions
     public void updateFunctionsTable()
     {
         // Fetch function definitions in the editor
@@ -503,9 +503,9 @@ public class functions_page
 
         int i = 0;
         // Iterate through the functions in the hashmap
-        for (String functionName : functionDefinitions.keySet())
+        for(String functionName : functionDefinitions.keySet())
         {
-            if (i % 3 == 0) // Ensure 3 per row
+            if(i % 3 == 0) // Ensure 3 per row
             {
                 // Add a new layout if the previous is filled
                 linearLayout = new LinearLayout(activity.getActivity());
@@ -534,7 +534,7 @@ public class functions_page
             textView.setOnClickListener(v ->
             {
                 // Deselect the previously selected text view
-                if (selectedTextView != null)
+                if(selectedTextView != null)
                 {
                     selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
                 }
@@ -564,7 +564,7 @@ public class functions_page
 
         int index = 0;
         // Iterate through the lines of the code
-        for (String s : lines)
+        for(String s : lines)
         {
             String line = s.trim();
             if(line.startsWith("#")) // ignore comments

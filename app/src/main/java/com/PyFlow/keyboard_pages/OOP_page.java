@@ -40,7 +40,7 @@ public class OOP_page
     private final SourcecodeTab activity;
     private final FragmentActivity fragmentActivity;
 
-    // Layouts for the tables that contain the quick input buttons and tracked variable definitions
+    // Layouts for the tables that contain the quick input buttons and tracked class definitions
     private final TableLayout classDefTable;
     private final TableLayout classKeysTable;
 
@@ -286,8 +286,8 @@ public class OOP_page
                 if(classDefinitions.containsKey(selectedClass))
                 {
                     // Move cursor to stored position of hashmap
-                    int var_pos = classDefinitions.get(selectedClass);
-                    sourceCode.setSelection(var_pos);
+                    int class_pos = classDefinitions.get(selectedClass);
+                    sourceCode.setSelection(class_pos);
                 }
             }
         });
@@ -452,7 +452,7 @@ public class OOP_page
         for(String s : lines)
         {
             String line = s.trim();
-            if (line.startsWith("#")) // ignore comments
+            if(line.startsWith("#")) // ignore comments
             {
                 index += line.length() + 1;
                 continue;
@@ -527,7 +527,7 @@ public class OOP_page
             textView.setOnClickListener(v ->
             {
                 // Deselect the previously selected text view
-                if (selectedTextView != null) // Check if there is a class selected
+                if(selectedTextView != null) // Check if there is a class selected
                 {
                     selectedTextView.setBackground(ContextCompat.getDrawable(activity.requireActivity(), R.drawable.table_background));
                 }

@@ -637,6 +637,9 @@ public class SourcecodeTab extends Fragment
         pages.add(R.layout.page_oop);
         pages.add(R.layout.page_except);
 
+        // Ensure all pages stay loaded
+        viewPager.setOffscreenPageLimit(pages.size());
+
         // Create a PagerAdapter for the different keyboard pages
         PagerAdapter keyboardPagerAdapter = new PagerAdapter()
         {
@@ -888,11 +891,12 @@ public class SourcecodeTab extends Fragment
 
                         // If the variables, functions and oop pages have been instantiated
                         // Update the definitions tables for the new file content
-                        if(page_variables != null && page_functions != null && page_OOP != null)
+                        if(page_variables != null && page_functions != null && page_OOP != null && page_import != null)
                         {
                             page_variables.updateVariablesTable();
                             page_functions.updateFunctionsTable();
                             page_OOP.updateClassesTable();
+                            page_import.updateImportsTable();
 
                             sourceCode.clearStacks(); // Clear the undo-redo stacks for the new file
                         }

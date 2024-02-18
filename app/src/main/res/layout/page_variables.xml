@@ -115,7 +115,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -162,7 +161,6 @@
                 android:id="@+id/var_def_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:showDividers="middle"
                 android:stretchColumns="*">
 

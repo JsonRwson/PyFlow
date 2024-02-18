@@ -199,7 +199,7 @@ public class variables_page
         // Button to paste the name of the selected variable definition
         pasteVarButton.setOnClickListener(v ->
         {
-            if (selectedTextView != null) // If a variable is selected
+            if(selectedTextView != null) // If a variable is selected
             {
                 // Get its name and insert at the cursor position
                 selectedVariable = selectedTextView.getText().toString();
@@ -211,12 +211,12 @@ public class variables_page
         // Button to jump to the first instance of a defined variable
         gotoVarButton.setOnClickListener(v ->
         {
-            if (selectedTextView != null) // If a variable is selected
+            if(selectedTextView != null) // If a variable is selected
             {
                 // Get the name of it
                 selectedVariable = selectedTextView.getText().toString();
                 // If the name exists in the definitions map, fetch its position in the editor
-                if (variableDefinitions.containsKey(selectedVariable))
+                if(variableDefinitions.containsKey(selectedVariable))
                 {
                     // Jump to the variable definition
                     int var_pos = variableDefinitions.get(selectedVariable);
@@ -294,10 +294,10 @@ public class variables_page
 
         int i = 0;
         // Iterate through each variable definition in the map
-        for (String variable : variableDefinitions.keySet())
+        for(String variable : variableDefinitions.keySet())
         {
             // Check if a new row needs to be added, 3 per row
-            if (i % 3 == 0)
+            if(i % 3 == 0)
             {
                 // If so, add a new layout for the row
                 linearLayout = new LinearLayout(activity.getActivity());
