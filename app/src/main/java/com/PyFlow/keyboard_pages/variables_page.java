@@ -350,9 +350,9 @@ public class variables_page
         String text = sourceCode.getText().toString();
         String[] lines = text.split("\\n");
 
-        // Pattern to find variables, match zero or more word characters, then whitespace, then equals, then whitespace followed by anything
+        // Pattern to find variables, match sequences of word characters optionally separated by a period, then equals, then anything
         // Capture group is the name of the variable
-        Pattern pattern = Pattern.compile("(\\w+)\\s*=\\s*.*");
+        Pattern pattern = Pattern.compile("([\\w\\.]+)\\s*=\\s*.*");
 
         int index = 0;
         // Iterate through the lines in the text of the editor

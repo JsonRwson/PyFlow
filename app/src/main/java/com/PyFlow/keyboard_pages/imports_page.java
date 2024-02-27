@@ -192,7 +192,7 @@ public class imports_page
         for (String library : importedLibraries.keySet())
         {
             // Check if a new row needs to be added, 3 per row
-            if (i % 3 == 0)
+            if(i % 3 == 0)
             {
                 // If so, add a new layout for the row
                 linearLayout = new LinearLayout(activity.getActivity());
